@@ -1,0 +1,4 @@
+&INPUT_ENDIAN
+	INPUT_ENDIAN_DEFAULT = 'little'
+&END
+
