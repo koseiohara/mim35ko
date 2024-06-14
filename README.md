@@ -1,6 +1,6 @@
 # MIM version0.35ko
 
-This version is based on MIM v0.35 provided by Yuki Kanno (https://github.com/mim-proj/mim/tags  ) and modified by Kosei Ohara.  
+This version is based on MIM v0.35 provided by Yuki Kanno (https://github.com/mim-proj/mim/tags) and modified by Kosei Ohara.  
 It is easier to read namelist in this version than the original one.
 
 ## Features
