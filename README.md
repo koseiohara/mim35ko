@@ -9,3 +9,6 @@ Itis easier to read namelist in this version than the original one.
 - Program do not stop by too many warns
 - Usage of Makefile is slightly changed
 
+## Samples of Namelists and Control Files
+Their samples are for Japanese Reanalysis for Three Quarters of a Century (JRA3Q).
+
