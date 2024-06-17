@@ -44,6 +44,11 @@ program mim
   type(grads_info) :: ginfo_msl   ! for INPUT_MSL
   type(grads_info) :: ginfo_ts    ! for INPUT_TS
   type(grads_info) :: ginfo_q     ! for INPUT_Q
+  type(grads_info) :: ginfo_ttswr ! for INPUT_TTSWR
+  type(grads_info) :: ginfo_ttlwr ! for INPUT_TTLWR
+  type(grads_info) :: ginfo_lrghr ! for INPUT_LRGHR
+  type(grads_info) :: ginfo_cnvhr ! for INPUT_CNVHR
+  type(grads_info) :: ginfo_vdfhr ! for INPUT_VDFHR
 
   ! output information
   type(grads_info) :: ginfo_zonal  ! for OUTPUT_ZONAL
@@ -155,6 +160,41 @@ program mim
           &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
           &           INPUT_ENDIAN_Q_INT, &
           &           ginfo_q )
+  end if
+
+  if( INPUT_TTSWR_FILENAME /= '' ) then
+     call grads_open( 71, INPUT_TTSWR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_TTSWR_INT, &
+          &           ginfo_ttswr )
+  end if
+
+  if( INPUT_TTLWR_FILENAME /= '' ) then
+     call grads_open( 72, INPUT_TTLWR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_TTLWR_INT, &
+          &           ginfo_ttlwr )
+  end if
+
+  if( INPUT_LRGHR_FILENAME /= '' ) then
+     call grads_open( 72, INPUT_LRGHR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_LRGHR_INT, &
+          &           ginfo_lrghr )
+  end if
+
+  if( INPUT_CNVHR_FILENAME /= '' ) then
+     call grads_open( 73, INPUT_CNVHR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_CNVHR_INT, &
+          &           ginfo_cnvhr )
+  end if
+
+  if( INPUT_VDFHR_FILENAME /= '' ) then
+     call grads_open( 74, INPUT_VDFHR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_VDFHR_INT, &
+          &           ginfo_vdfhr )
   end if
 
 
@@ -330,9 +370,35 @@ program mim
         q_3d(:,:,:) = 0
      end if
 
-     where( q_3d /= INPUT_UNDEF_Q_REAL )
-        q_3d = q_3d * cp        ! [K/s] (dT/dt) -> [J/(kg s)]
-     end where
+     if (INPUT_TTSWR_FILENAME /= '') then
+         call grads_read(ginfo_ttswr, ttswr_3d)
+     else
+         ttswr_3d(1:im,1:jm,1:km) = 0.
+     endif
+
+     if (INPUT_TTLWR_FILENAME /= '') then
+         call grads_read(ginfo_ttlwr, ttlwr_3d)
+     else
+         ttlwr_3d(1:im,1:jm,1:km) = 0.
+     endif
+
+     if (INPUT_LRGHR_FILENAME /= '') then
+         call grads_read(ginfo_lrghr, lrghr_3d)
+     else
+         lrghr_3d(1:im,1:jm,1:km) = 0.
+     endif
+
+     if (INPUT_CNVHR_FILENAME /= '') then
+         call grads_read(ginfo_cnvhr, cnvhr_3d)
+     else
+         cnvhr_3d(1:im,1:jm,1:km) = 0.
+     endif
+
+     if (INPUT_VDFHR_FILENAME /= '') then
+         call grads_read(ginfo_vdfhr, vdfhr_3d)
+     else
+         vdfhr_3d(1:im,1:jm,1:km) = 0.
+     endif
 
 
      !********** interpolate/extrapolate to undef data **********!
@@ -342,6 +408,42 @@ program mim
      call undef_fill( im, jm, km, INPUT_UNDEF_Z_REAL    , pin, z )
      call undef_fill( im, jm, km, INPUT_UNDEF_OMEGA_REAL, pin, omega )
      call undef_fill( im, jm, km, INPUT_UNDEF_Q_REAL    , pin, q_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_TTSWR_REAL, pin, ttswr_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_TTLWR_REAL, pin, ttlwr_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_LRGHR_REAL, pin, lrghr_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_CNVHR_REAL, pin, cnvhr_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_VDFHR_REAL, pin, vdfhr_3d )
+
+
+     if(  INPUT_Q_FILENAME     == '' .AND. &
+        & INPUT_TTSWR_FILENAME /= '' .AND. &
+        & INPUT_TTLWR_FILENAME /= '' .AND. &
+        & INPUT_LRGHR_FILENAME /= '' .AND. &
+        & INPUT_CNVHR_FILENAME /= '' .AND. &
+        & INPUT_VDFHR_FILENAME /= ''       ) then
+
+       q_3d(1:im,1:jm,1:km) = ttswr_3d(1:im,1:jm,1:km) + ttlwr_3d(1:im,1:jm,1:km) + lrghr_3d(1:im,1:jm,1:km) + &
+                            & cnvhr_3d(1:im,1:jm,1:km) + vdfhr_3d(1:im,1:jm,1:km)
+     endif
+
+     !where( q_3d /= INPUT_UNDEF_Q_REAL )
+     !   q_3d = q_3d * cp        ! [K/s] (dT/dt) -> [J/(kg s)]
+     !end where
+     q_3d(1:im,1:jm,1:km)     = q_3d(1:im,1:jm,1:km)     * cp
+     ttswr_3d(1:im,1:jm,1:km) = ttswr_3d(1:im,1:jm,1:km) * cp
+     ttlwr_3d(1:im,1:jm,1:km) = ttlwr_3d(1:im,1:jm,1:km) * cp
+     lrghr_3d(1:im,1:jm,1:km) = lrghr_3d(1:im,1:jm,1:km) * cp
+     cnvhr_3d(1:im,1:jm,1:km) = cnvhr_3d(1:im,1:jm,1:km) * cp
+     vdfhr_3d(1:im,1:jm,1:km) = vdfhr_3d(1:im,1:jm,1:km) * cp
+
+
+     !!********** interpolate/extrapolate to undef data **********!
+     !call undef_fill( im, jm, km, INPUT_UNDEF_U_REAL    , pin, u )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_V_REAL    , pin, v )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_T_REAL    , pin, t )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_Z_REAL    , pin, z )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_OMEGA_REAL, pin, omega )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_Q_REAL    , pin, q_3d )
 
 
      !********** check value **********!
@@ -494,6 +596,7 @@ program mim
              &                 omega, omega_past, pt, pt_past, &
              &                 pt_dot )        ! pt, u, v, w -> D(pt)/dt
         call get_pt_dot_q_inv( pt_dot, q_3d )  ! D(pt)/dt -> Q
+
 
      else
         call get_pt_dot_q( q_3d, pt_dot )  ! Q -> D(pt)/dt

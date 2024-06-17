@@ -171,6 +171,11 @@ module mim_var
 
   !*** diabatic heating ***!
   real(4),allocatable :: q_3d(:,:,:)    ! 3D diabatic heating
+  real(4),allocatable :: ttswr_3d(:,:,:)    ! 3D diabatic heating
+  real(4),allocatable :: ttlwr_3d(:,:,:)    ! 3D diabatic heating
+  real(4),allocatable :: lrghr_3d(:,:,:)    ! 3D diabatic heating
+  real(4),allocatable :: cnvhr_3d(:,:,:)    ! 3D diabatic heating
+  real(4),allocatable :: vdfhr_3d(:,:,:)    ! 3D diabatic heating
   real(4),allocatable :: q_zm(:,:)      ! zonal mean diabatic heating
   real(4),allocatable :: q_ex_3d(:,:,:)
   real(4),allocatable :: q_ex_zm(:,:)
