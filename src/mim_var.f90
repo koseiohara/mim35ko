@@ -347,6 +347,11 @@ contains
     end if
 
     allocate( q_3d(im,jm,km) )
+    allocate( ttswr_3d(im,jm,km) )
+    allocate( ttlwr_3d(im,jm,km) )
+    allocate( lrghr_3d(im,jm,km) )
+    allocate( cnvhr_3d(im,jm,km) )
+    allocate( vdfhr_3d(im,jm,km) )
     allocate( q_zm(jm,ko) )
     allocate( q_ex_3d(im,jm,km) )
     allocate( q_ex_zm(jm,ko) )
@@ -508,6 +513,11 @@ contains
     if( allocated( p_pt_wave ) ) deallocate( p_pt_wave )
 
     deallocate( q_3d )
+    deallocate( ttswr_3d)
+    deallocate( ttlwr_3d)
+    deallocate( lrghr_3d)
+    deallocate( cnvhr_3d)
+    deallocate( vdfhr_3d)
     deallocate( q_zm )
     deallocate( q_ex_3d )
     deallocate( q_ex_zm )
