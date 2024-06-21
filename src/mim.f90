@@ -880,36 +880,45 @@ program mim
           &           qz_gmean )
 
      
+     if (INPUT_TTSWR_FILENAME /= '') then
+         call diabaticHeating(ttswr_3d(1:im,1:jm,1:km), &  !! IN
+                            & ttswr_zm(1:jm,1:ko)     , &  !! OUT
+                            & ttswr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttswr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttswr_qz_gmean(1)         )  !! OUT
+     endif
 
-     call diabaticHeating(ttswr_3d(1:im,1:jm,1:km), &  !! IN
-                        & ttswr_zm(1:jm,1:ko)     , &  !! OUT
-                        & ttswr_gz_zm(1:jm,1:ko)  , &  !! OUT
-                        & ttswr_qe_zm(1:jm,1:ko)  , &  !! OUT
-                        & ttswr_qz_gmean(1)         )  !! OUT
+     if (INPUT_TTLWR_FILENAME /= '') then
+         call diabaticHeating(ttlwr_3d(1:im,1:jm,1:km), &  !! IN
+                            & ttlwr_zm(1:jm,1:ko)     , &  !! OUT
+                            & ttlwr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttlwr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttlwr_qz_gmean(1)         )  !! OUT
+     endif
 
-     call diabaticHeating(ttlwr_3d(1:im,1:jm,1:km), &  !! IN
-                        & ttlwr_zm(1:jm,1:ko)     , &  !! OUT
-                        & ttlwr_gz_zm(1:jm,1:ko)  , &  !! OUT
-                        & ttlwr_qe_zm(1:jm,1:ko)  , &  !! OUT
-                        & ttlwr_qz_gmean(1)         )  !! OUT
+     if (INPUT_LRGHR_FILENAME /= '') then
+         call diabaticHeating(lrghr_3d(1:im,1:jm,1:km), &  !! IN
+                            & lrghr_zm(1:jm,1:ko)     , &  !! OUT
+                            & lrghr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & lrghr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & lrghr_qz_gmean(1)         )  !! OUT
+     endif
 
-     call diabaticHeating(lrghr_3d(1:im,1:jm,1:km), &  !! IN
-                        & lrghr_zm(1:jm,1:ko)     , &  !! OUT
-                        & lrghr_gz_zm(1:jm,1:ko)  , &  !! OUT
-                        & lrghr_qe_zm(1:jm,1:ko)  , &  !! OUT
-                        & lrghr_qz_gmean(1)         )  !! OUT
+     if (INPUT_CNVHR_FILENAME /= '') then
+         call diabaticHeating(cnvhr_3d(1:im,1:jm,1:km), &  !! IN
+                            & cnvhr_zm(1:jm,1:ko)     , &  !! OUT
+                            & cnvhr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & cnvhr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & cnvhr_qz_gmean(1)         )  !! OUT
+     endif
 
-     call diabaticHeating(cnvhr_3d(1:im,1:jm,1:km), &  !! IN
-                        & cnvhr_zm(1:jm,1:ko)     , &  !! OUT
-                        & cnvhr_gz_zm(1:jm,1:ko)  , &  !! OUT
-                        & cnvhr_qe_zm(1:jm,1:ko)  , &  !! OUT
-                        & cnvhr_qz_gmean(1)         )  !! OUT
-
-     call diabaticHeating(vdfhr_3d(1:im,1:jm,1:km), &  !! IN
-                        & vdfhr_zm(1:jm,1:ko)     , &  !! OUT
-                        & vdfhr_gz_zm(1:jm,1:ko)  , &  !! OUT
-                        & vdfhr_qe_zm(1:jm,1:ko)  , &  !! OUT
-                        & vdfhr_qz_gmean(1)         )  !! OUT
+     if (INPUT_VDFHR_FILENAME /= '') then
+         call diabaticHeating(vdfhr_3d(1:im,1:jm,1:km), &  !! IN
+                            & vdfhr_zm(1:jm,1:ko)     , &  !! OUT
+                            & vdfhr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & vdfhr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & vdfhr_qz_gmean(1)         )  !! OUT
+     endif
 
 
      ! ***** below not checked *****!
