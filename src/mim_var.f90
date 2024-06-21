@@ -170,19 +170,39 @@ module mim_var
   real(4),allocatable :: p_pt_wave(:,:,:,:)
 
   !*** diabatic heating ***!
-  real(4),allocatable :: q_3d(:,:,:)    ! 3D diabatic heating
-  real(4),allocatable :: ttswr_3d(:,:,:)    ! 3D diabatic heating
-  real(4),allocatable :: ttlwr_3d(:,:,:)    ! 3D diabatic heating
-  real(4),allocatable :: lrghr_3d(:,:,:)    ! 3D diabatic heating
-  real(4),allocatable :: cnvhr_3d(:,:,:)    ! 3D diabatic heating
-  real(4),allocatable :: vdfhr_3d(:,:,:)    ! 3D diabatic heating
-  real(4),allocatable :: q_zm(:,:)      ! zonal mean diabatic heating
+  real(4),allocatable :: q_3d(:,:,:)        ! 3D diabatic heating
+  real(4),allocatable :: ttswr_3d(:,:,:)    ! 3D diabatic heating by short wave radiation
+  real(4),allocatable :: ttlwr_3d(:,:,:)    ! 3D diabatic heating by long  wave radiation
+  real(4),allocatable :: lrghr_3d(:,:,:)    ! 3D diabatic heating by large scale condensation
+  real(4),allocatable :: cnvhr_3d(:,:,:)    ! 3D diabatic heating by convection
+  real(4),allocatable :: vdfhr_3d(:,:,:)    ! 3D diabatic heating by vertical diffusion
+  real(4),allocatable :: q_zm(:,:)          ! zonal mean diabatic heating
+  real(4),allocatable :: ttswr_zm(:,:)      ! zonal mean diabatic heating by short wave radiation
+  real(4),allocatable :: ttlwr_zm(:,:)      ! zonal mean diabatic heating by long  wave radiation
+  real(4),allocatable :: lrghr_zm(:,:)      ! zonal mean diabatic heating by large scale condensation
+  real(4),allocatable :: cnvhr_zm(:,:)      ! zonal mean diabatic heating by convection
+  real(4),allocatable :: vdfhr_zm(:,:)      ! zonal mean diabatic heating by vertical diffusion
   real(4),allocatable :: q_ex_3d(:,:,:)
   real(4),allocatable :: q_ex_zm(:,:)
-  real(4),allocatable :: qgz_zm(:,:)
+  real(4),allocatable :: qgz_zm(:,:)        ! diabatic heating to the zonal mean state
+  real(4),allocatable :: ttswr_gz_zm(:,:)   ! diabatic heating to the zonal mean state by short wave radiation
+  real(4),allocatable :: ttlwr_gz_zm(:,:)   ! diabatic heating to the zonal mean state by long  wave radiation
+  real(4),allocatable :: lrghr_gz_zm(:,:)   ! diabatic heating to the zonal mean state by large scale condensation
+  real(4),allocatable :: cnvhr_gz_zm(:,:)   ! diabatic heating to the zonal mean state by convection
+  real(4),allocatable :: vdfhr_gz_zm(:,:)   ! diabatic heating to the zonal mean state by vertical diffusion
   real(4),allocatable :: qz_pdd(:)
-  real(4)             :: qz_gmean(1)  ! Az generation by diabatic heating
-  real(4),allocatable :: qe_zm(:,:)   ! Ae generation by diabatic heating
+  real(4)             :: qz_gmean(1)        ! Az generation by diabatic heating
+  real(4)             :: ttswr_qz_gmean(1)  ! Az generation by short wave radiation
+  real(4)             :: ttlwr_qz_gmean(1)  ! Az generation by long  wave radiation
+  real(4)             :: lrghr_qz_gmean(1)  ! Az generation by large scale condensation
+  real(4)             :: cnvhr_qz_gmean(1)  ! Az generation by convection
+  real(4)             :: vdfhr_qz_gmean(1)  ! Az generation by vertical diffusion
+  real(4),allocatable :: qe_zm(:,:)         ! Ae generation by diabatic heating
+  real(4),allocatable :: ttswr_qe_zm(:,:)   ! Ae generation by short wave radiation
+  real(4),allocatable :: ttlwr_qe_zm(:,:)   ! Ae generation by long  wave radiation 
+  real(4),allocatable :: lrghr_qe_zm(:,:)   ! Ae generation by large scale condensation
+  real(4),allocatable :: cnvhr_qe_zm(:,:)   ! Ae generation by convection
+  real(4),allocatable :: vdfhr_qe_zm(:,:)   ! Ae generation by vertical diffusion
 
   !*** others ***!
   real(4),allocatable :: p_pds(:)    ! p+s: zonal mean surface pressure
@@ -353,11 +373,26 @@ contains
     allocate( cnvhr_3d(im,jm,km) )
     allocate( vdfhr_3d(im,jm,km) )
     allocate( q_zm(jm,ko) )
+    allocate( ttswr_zm(jm,ko) )
+    allocate( ttlwr_zm(jm,ko) )
+    allocate( lrghr_zm(jm,ko) )
+    allocate( cnvhr_zm(jm,ko) )
+    allocate( vdfhr_zm(jm,ko) )
     allocate( q_ex_3d(im,jm,km) )
     allocate( q_ex_zm(jm,ko) )
     allocate( qgz_zm(jm,ko) )
+    allocate( ttswr_gz_zm(jm,ko) )
+    allocate( ttlwr_gz_zm(jm,ko) )
+    allocate( lrghr_gz_zm(jm,ko) )
+    allocate( cnvhr_gz_zm(jm,ko) )
+    allocate( vdfhr_gz_zm(jm,ko) )
     allocate( qz_pdd(ko) )
     allocate( qe_zm(jm,ko) )
+    allocate( ttswr_qe_zm(jm,ko) )
+    allocate( ttlwr_qe_zm(jm,ko) )
+    allocate( lrghr_qe_zm(jm,ko) )
+    allocate( cnvhr_qe_zm(jm,ko) )
+    allocate( vdfhr_qe_zm(jm,ko) )
 
     allocate( p_pds(jm) )
     allocate( work(im,jm,km) )
@@ -513,17 +548,37 @@ contains
     if( allocated( p_pt_wave ) ) deallocate( p_pt_wave )
 
     deallocate( q_3d )
+    deallocate( ttswr_3d )
+    deallocate( ttlwr_3d )
+    deallocate( lrghr_3d )
+    deallocate( cnvhr_3d )
+    deallocate( vdfhr_3d )
     deallocate( ttswr_3d)
     deallocate( ttlwr_3d)
     deallocate( lrghr_3d)
     deallocate( cnvhr_3d)
     deallocate( vdfhr_3d)
     deallocate( q_zm )
+    deallocate( ttswr_zm )
+    deallocate( ttlwr_zm )
+    deallocate( lrghr_zm )
+    deallocate( cnvhr_zm )
+    deallocate( vdfhr_zm )
     deallocate( q_ex_3d )
     deallocate( q_ex_zm )
     deallocate( qgz_zm )
+    deallocate( ttswr_gz_zm )
+    deallocate( ttlwr_gz_zm )
+    deallocate( lrghr_gz_zm )
+    deallocate( cnvhr_gz_zm )
+    deallocate( vdfhr_gz_zm )
     deallocate( qz_pdd )
     deallocate( qe_zm )
+    deallocate( ttswr_qe_zm )
+    deallocate( ttlwr_qe_zm )
+    deallocate( lrghr_qe_zm )
+    deallocate( cnvhr_qe_zm )
+    deallocate( vdfhr_qe_zm )
 
     deallocate( p_pds )
     deallocate( work )

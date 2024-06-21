@@ -14,6 +14,12 @@ module diabatic_all
     contains
 
 
+    ! Arguments :
+    !     1. 3d distribution of diabatic heating
+    !     2. zonal mean diabatic heating
+    !     3. diabatic heating to the zonal mean state
+    !     4. Generation rate of eddy available potential energy
+    !     5. Generation rate of zonal available potential energy
     subroutine diabaticHeating(heating_3d, heating_zm, heating_gz_zm, eddy_generation, zonal_generation_gmean)
         real(4), intent(in)  :: heating_3d(im,jm,km)
         real(4), intent(out) :: heating_zm(jm,ko)

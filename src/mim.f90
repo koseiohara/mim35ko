@@ -56,6 +56,8 @@ program mim
   type(grads_info) :: ginfo_gmean  ! for OUTPUT_GMEAN
   type(grads_info) :: ginfo_wave   ! for OUTPUT_WAVE
 
+  logical :: Q_exist
+
 
 !  write(*,*) "MIM Version dev"
   write(*,*) "MIM Version 0.33r1" ! Please rewrite Makefile
@@ -261,6 +263,14 @@ program mim
 
   open(newunit=warn_unit, file="../output/warnlog.txt", action="write")
   open(newunit=nan_detector, file='../output/nans.txt', action='write')
+
+  Q_exist = (INPUT_Q_FILENAME /= '') .OR. &
+            (INPUT_TTSWR_FILENAME /= '' .AND. &
+             INPUT_TTLWR_FILENAME /= '' .AND. &
+             INPUT_LRGHR_FILENAME /= '' .AND. &
+             INPUT_CNVHR_FILENAME /= '' .AND. &
+             INPUT_VDFHR_FILENAME /= ''       )
+                 
 
   !**************************************************!
   !                                                  !
@@ -575,7 +585,8 @@ program mim
 
 
      !***** D(pt)/Dt (D: Lagrangian) *****!
-     if( INPUT_Q_FILENAME == "" ) then
+     !if( INPUT_Q_FILENAME == "" ) then
+     if( .NOT. Q_exist ) then
 
         if( INPUT_OMEGA_FILENAME == "" ) then
            ! calculate omega from continuity Eq.
@@ -952,8 +963,26 @@ program mim
         call grads_write( icount, 'c_kz_ke'    , ginfo_zonal, c_kz_ke )
         call grads_write( icount, 'c_kz_w'     , ginfo_zonal, c_kz_w )
         call grads_write( icount, 'q_zm'       , ginfo_zonal, q_zm )
+        call grads_write( icount, 'ttswr_zm'   , ginfo_zonal, ttswr_zm )
+        call grads_write( icount, 'ttlwr_zm'   , ginfo_zonal, ttlwr_zm )
+
+        call grads_write( icount, 'lrghr_zm'   , ginfo_zonal, lrghr_zm )
+        call grads_write( icount, 'cnvhr_zm'   , ginfo_zonal, cnvhr_zm )
+        call grads_write( icount, 'vdfhr_zm'   , ginfo_zonal, vdfhr_zm )
         call grads_write( icount, 'qgz_zm'     , ginfo_zonal, qgz_zm )
+        call grads_write( icount, 'ttswr_gz_zm', ginfo_zonal, ttswr_gz_zm )
+
+        call grads_write( icount, 'ttlwr_gz_zm', ginfo_zonal, ttlwr_gz_zm )
+        call grads_write( icount, 'lrghr_gz_zm', ginfo_zonal, lrghr_gz_zm )
+        call grads_write( icount, 'cnvhr_gz_zm', ginfo_zonal, cnvhr_gz_zm )
+        call grads_write( icount, 'vdfhr_gz_zm', ginfo_zonal, vdfhr_gz_zm )
         call grads_write( icount, 'qe_zm'      , ginfo_zonal, qe_zm )
+
+        call grads_write( icount, 'ttswr_qe_zm', ginfo_zonal, ttswr_qe_zm )
+        call grads_write( icount, 'ttlwr_qe_zm', ginfo_zonal, ttlwr_qe_zm )
+        call grads_write( icount, 'lrghr_qe_zm', ginfo_zonal, lrghr_qe_zm )
+        call grads_write( icount, 'cnvhr_qe_zm', ginfo_zonal, cnvhr_qe_zm )
+        call grads_write( icount, 'vdfhr_qe_zm', ginfo_zonal, vdfhr_qe_zm )
 
         call grads_write( icount, 'kz_zm'      , ginfo_zonal, kz_zm )
         call grads_write( icount, 'ke_zm'      , ginfo_zonal, ke_zm )
@@ -1034,11 +1063,56 @@ program mim
         call integral_p( jm, ko, pout, p_pds, q_zm, temp_vint )
         call grads_write( icount, 'q_zm_vint', ginfo_vint, temp_vint )
 
+        call integral_p( jm, ko, pout, p_pds, ttswr_zm, temp_vint )
+        call grads_write( icount, 'ttswr_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, ttlwr_zm, temp_vint )
+        call grads_write( icount, 'ttlwr_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, lrghr_zm, temp_vint )
+        call grads_write( icount, 'lrghr_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, cnvhr_zm, temp_vint )
+        call grads_write( icount, 'cnvhr_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, vdfhr_zm, temp_vint )
+        call grads_write( icount, 'vdfhr_zm_vint', ginfo_vint, temp_vint )
+
         call integral_p( jm, ko, pout, p_pds, qgz_zm, temp_vint )
         call grads_write( icount, 'qgz_zm_vint', ginfo_vint, temp_vint )
 
+        call integral_p( jm, ko, pout, p_pds, ttswr_gz_zm, temp_vint )
+        call grads_write( icount, 'ttswr_gz_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, ttlwr_gz_zm, temp_vint )
+        call grads_write( icount, 'ttlwr_gz_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, lrghr_gz_zm, temp_vint )
+        call grads_write( icount, 'lrghr_gz_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, cnvhr_gz_zm, temp_vint )
+        call grads_write( icount, 'cnvhr_gz_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, vdfhr_gz_zm, temp_vint )
+        call grads_write( icount, 'vdfhr_gz_zm_vint', ginfo_vint, temp_vint )
+
         call integral_p( jm, ko, pout, p_pds, qe_zm, temp_vint )
         call grads_write( icount, 'qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, ttswr_qe_zm, temp_vint )
+        call grads_write( icount, 'ttswr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, ttlwr_qe_zm, temp_vint )
+        call grads_write( icount, 'ttlwr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, lrghr_qe_zm, temp_vint )
+        call grads_write( icount, 'lrghr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, cnvhr_qe_zm, temp_vint )
+        call grads_write( icount, 'cnvhr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, vdfhr_qe_zm, temp_vint )
+        call grads_write( icount, 'vdfhr_qe_zm_vint', ginfo_vint, temp_vint )
 
         call integral_p( jm, ko, pout, p_pds, dkzdt_vkz, temp_vint )
         call grads_write( icount, 'dkzdt_vkz_vint', ginfo_vint, temp_vint )
@@ -1085,6 +1159,11 @@ program mim
      if( OUTPUT_GMEAN_FILENAME /= '' ) then
         call grads_write( icount, 'az_gmean', ginfo_gmean, az_gmean )
         call grads_write( icount, 'qz_gmean', ginfo_gmean, qz_gmean )
+        call grads_write( icount, 'ttswr_qz_gmean', ginfo_gmean, ttswr_qz_gmean )
+        call grads_write( icount, 'ttlwr_qz_gmean', ginfo_gmean, ttlwr_qz_gmean )
+        call grads_write( icount, 'lrghr_qz_gmean', ginfo_gmean, lrghr_qz_gmean )
+        call grads_write( icount, 'cnvhr_qz_gmean', ginfo_gmean, cnvhr_qz_gmean )
+        call grads_write( icount, 'vdfhr_qz_gmean', ginfo_gmean, vdfhr_qz_gmean )
      end if
 
      ! wavenumber decomposition
