@@ -2,16 +2,58 @@ module diabatic_all
 
     use parameter, only : rkappa, cp
     use com_var  , only : im, jm, km, ko, pin, pout
-    use mim_var  , only : pdd_pd
+    use mim_var  , only : pdd_pd, p_pdds
     use biseki, only : biseki_biseki
     use biseki_y, only : biseki_y_biseki_y
 
     implicit none
 
     private
-    public :: 
+    public :: diabaticHeating
 
     contains
+
+
+    subroutine diabaticHeating(heating_3d, heating_zm, heating_gz_zm, eddy_generation, zonal_generation_gmean)
+        real(4), intent(in)  :: heating_3d(im,jm,km)
+        real(4), intent(out) :: heating_zm(jm,ko)
+        real(4), intent(out) :: heating_gz_zm(jm,ko)
+        real(4), intent(out) :: eddy_generation(jm,ko)
+        real(4), intent(out) :: zonal_generation_gmean(1)
+
+        real(4) :: heating_exner_zm(jm,ko)
+        real(4) :: heating_pdd(ko)
+        real(4) :: zonal_generation(ko)
+
+        call heating_ZonalMean(heating_3d(1:im,1:jm,1:km), &  !! IN
+                             & heating_zm(1:jm,1:ko)       )  !! OUT
+
+        call heating_per_Exner(heating_3d(1:im,1:jm,1:km), &  !! IN
+                             & heating_exner_zm(1:jm,1:ko) )  !! OUT
+
+        call heating_ZonalMeanState(heating_exner_zm(1:jm,1:ko), &  !! IN
+                                  & heating_gz_zm(1:jm,1:ko)     )  !! OUT
+
+        call heating_Eddy(heating_zm(1:jm,1:ko)   , &  !! IN
+                        & heating_gz_zm(1:jm,1:ko), &  !! IN
+                        & eddy_generation(1:jm,1:ko))  !! OUT
+
+        call heating_GroundState(heating_exner_zm(1:jm,1:ko), &  !! IN
+                               & heating_pdd(1:ko)            )  !! OUT
+
+        call heating_Zonal(heating_gz_zm(1:jm,1:ko), &  !! IN
+                         & heating_pdd(1:ko)       , &  !! IN
+                         & zonal_generation(1:ko)    )  !! OUT
+
+        call integral_p(1                      , &  !! IN   size in lat-direction
+                      & ko                     , &  !! IN   size in p-direction
+                      & pout(1:ko)             , &  !! IN   output levels
+                      & p_pdds(1)              , &  !! IN   p_dagger_dagger at the surface
+                      & zonal_generation(1:ko) , &  !! IN   vertical profile of parameter
+                      & zonal_generation_gmean(1))  !! OUT  vertically integrated parameter
+
+    end subroutine diabaticHeating
+
 
     ! Zonal mean diabatic heating bar{Q^*}
     subroutine heating_ZonalMean(heating_3d, heating_zm)
