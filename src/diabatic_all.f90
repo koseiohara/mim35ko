@@ -113,7 +113,7 @@ module diabatic_all
         real(4), intent(in)  :: heating_gz_zm(jm,ko)
         real(4), intent(out) :: eddy_generation(jm,ko)
 
-        eddy_generation(1:jm,1:ko) = heating_zm(jm,ko) - heating_gz_zm(jm,ko)
+        eddy_generation(1:jm,1:ko) = heating_zm(1:jm,1:ko) - heating_gz_zm(1:jm,1:ko)
 
     end subroutine heating_Eddy
 
@@ -143,7 +143,7 @@ module diabatic_all
         call biseki_y_biseki_y(heating_gz_zm(1:jm,1:ko), &  !! IN
                              & zonal_generation(1:ko)    )  !! OUT
 
-        zonal_generation(1:ko) = zonal_generation(1:ko) + heating_pdd(1:ko)
+        zonal_generation(1:ko) = zonal_generation(1:ko) - heating_pdd(1:ko)
 
     end subroutine heating_Zonal
 
