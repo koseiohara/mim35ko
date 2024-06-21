@@ -24,6 +24,8 @@ program mim
   use biseki, only : biseki_ini, biseki_biseki, biseki_sekibun, biseki_bibun
   use biseki_y, only : biseki_y_ini, biseki_y_biseki_y, &
        &               biseki_y_sekibun_y, biseki_y_bibun_y
+
+  use diabatic_all, only : diabaticHeating
   implicit none
 
   ! temporal variables
@@ -876,6 +878,38 @@ program mim
           &            qz_pdd )
      call integral_p( 1, ko, pout, p_pdds, qz_pdd, &
           &           qz_gmean )
+
+     
+
+     call diabaticHeating(ttswr_3d(1:im,1:jm,1:km), &  !! IN
+                        & ttswr_zm(1:jm,1:ko)     , &  !! OUT
+                        & ttswr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                        & ttswr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                        & ttswr_qz_gmean(1)         )  !! OUT
+
+     call diabaticHeating(ttlwr_3d(1:im,1:jm,1:km), &  !! IN
+                        & ttlwr_zm(1:jm,1:ko)     , &  !! OUT
+                        & ttlwr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                        & ttlwr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                        & ttlwr_qz_gmean(1)         )  !! OUT
+
+     call diabaticHeating(lrghr_3d(1:im,1:jm,1:km), &  !! IN
+                        & lrghr_zm(1:jm,1:ko)     , &  !! OUT
+                        & lrghr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                        & lrghr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                        & lrghr_qz_gmean(1)         )  !! OUT
+
+     call diabaticHeating(cnvhr_3d(1:im,1:jm,1:km), &  !! IN
+                        & cnvhr_zm(1:jm,1:ko)     , &  !! OUT
+                        & cnvhr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                        & cnvhr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                        & cnvhr_qz_gmean(1)         )  !! OUT
+
+     call diabaticHeating(vdfhr_3d(1:im,1:jm,1:km), &  !! IN
+                        & vdfhr_zm(1:jm,1:ko)     , &  !! OUT
+                        & vdfhr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                        & vdfhr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                        & vdfhr_qz_gmean(1)         )  !! OUT
 
 
      ! ***** below not checked *****!
