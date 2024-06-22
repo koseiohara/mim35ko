@@ -21,11 +21,6 @@ module namelist
   character(1024) :: INPUT_OMEGA_FILENAME
   character(1024) :: INPUT_TOPO_FILENAME
   character(1024) :: INPUT_Q_FILENAME
-  character(1024) :: INPUT_TTSWR_FILENAME
-  character(1024) :: INPUT_TTLWR_FILENAME
-  character(1024) :: INPUT_LRGHR_FILENAME
-  character(1024) :: INPUT_CNVHR_FILENAME
-  character(1024) :: INPUT_VDFHR_FILENAME
 
   character(1024) :: INPUT_UNIT_Z
   character(1024) :: INPUT_UNIT_PS
@@ -43,11 +38,6 @@ module namelist
   character(1024) :: INPUT_UNDEF_Z
   character(1024) :: INPUT_UNDEF_OMEGA
   character(1024) :: INPUT_UNDEF_Q
-  character(1024) :: INPUT_UNDEF_TTSWR
-  character(1024) :: INPUT_UNDEF_TTLWR
-  character(1024) :: INPUT_UNDEF_LRGHR
-  character(1024) :: INPUT_UNDEF_CNVHR
-  character(1024) :: INPUT_UNDEF_VDFHR
   real(4)         :: INPUT_UNDEF_DEFAULT_REAL  ! below derivatives
   real(4)         :: INPUT_UNDEF_UVT_REAL
   real(4)         :: INPUT_UNDEF_U_REAL
@@ -59,11 +49,6 @@ module namelist
   real(4)         :: INPUT_UNDEF_Z_REAL
   real(4)         :: INPUT_UNDEF_OMEGA_REAL
   real(4)         :: INPUT_UNDEF_Q_REAL
-  real(4)         :: INPUT_UNDEF_TTSWR_REAL
-  real(4)         :: INPUT_UNDEF_TTLWR_REAL
-  real(4)         :: INPUT_UNDEF_LRGHR_REAL
-  real(4)         :: INPUT_UNDEF_CNVHR_REAL
-  real(4)         :: INPUT_UNDEF_VDFHR_REAL
 
   character(1024) :: INPUT_ENDIAN_DEFAULT
   character(1024) :: INPUT_ENDIAN_UVT
@@ -76,11 +61,6 @@ module namelist
   character(1024) :: INPUT_ENDIAN_Z
   character(1024) :: INPUT_ENDIAN_OMEGA
   character(1024) :: INPUT_ENDIAN_Q
-  character(1024) :: INPUT_ENDIAN_TTSWR
-  character(1024) :: INPUT_ENDIAN_TTLWR
-  character(1024) :: INPUT_ENDIAN_LRGHR
-  character(1024) :: INPUT_ENDIAN_CNVHR
-  character(1024) :: INPUT_ENDIAN_VDFHR
   character(1024) :: INPUT_ENDIAN_TOPO
   integer         :: INPUT_ENDIAN_DEFAULT_INT  ! below derivatives
   integer         :: INPUT_ENDIAN_UVT_INT
@@ -93,11 +73,6 @@ module namelist
   integer         :: INPUT_ENDIAN_Z_INT
   integer         :: INPUT_ENDIAN_OMEGA_INT
   integer         :: INPUT_ENDIAN_Q_INT
-  integer         :: INPUT_ENDIAN_TTSWR_INT
-  integer         :: INPUT_ENDIAN_TTLWR_INT
-  integer         :: INPUT_ENDIAN_LRGHR_INT
-  integer         :: INPUT_ENDIAN_CNVHR_INT
-  integer         :: INPUT_ENDIAN_VDFHR_INT
   integer         :: INPUT_ENDIAN_TOPO_INT
 
   integer         :: INPUT_XDEF_NUM
@@ -175,12 +150,7 @@ contains
          &              INPUT_Z_FILENAME, &
          &              INPUT_OMEGA_FILENAME, &
          &              INPUT_TOPO_FILENAME, &
-         &              INPUT_Q_FILENAME, &
-         &              INPUT_TTSWR_FILENAME, &
-         &              INPUT_TTLWR_FILENAME, &
-         &              INPUT_LRGHR_FILENAME, &
-         &              INPUT_CNVHR_FILENAME, &
-         &              INPUT_VDFHR_FILENAME
+         &              INPUT_Q_FILENAME
 
     namelist / INPUT_UNIT / INPUT_UNIT_Z, INPUT_UNIT_PS, &
          &                  INPUT_UNIT_MSL, INPUT_UNIT_TOPO
@@ -190,10 +160,7 @@ contains
          &                   INPUT_UNDEF_V, INPUT_UNDEF_T, &
          &                   INPUT_UNDEF_PS, INPUT_UNDEF_MSL, &
          &                   INPUT_UNDEF_TS, INPUT_UNDEF_Z, &
-         &                   INPUT_UNDEF_OMEGA, INPUT_UNDEF_Q, &
-         &                   INPUT_UNDEF_TTSWR, INPUT_UNDEF_TTLWR, &
-         &                   INPUT_UNDEF_LRGHR, INPUT_UNDEF_CNVHR, &
-         &                   INPUT_UNDEF_VDFHR
+         &                   INPUT_UNDEF_OMEGA, INPUT_UNDEF_Q
 
     namelist / INPUT_ENDIAN / INPUT_ENDIAN_DEFAULT, &
          &                    INPUT_ENDIAN_UVT, INPUT_ENDIAN_U, &
@@ -201,9 +168,6 @@ contains
          &                    INPUT_ENDIAN_PS, INPUT_ENDIAN_MSL, &
          &                    INPUT_ENDIAN_TS, INPUT_ENDIAN_Z, &
          &                    INPUT_ENDIAN_OMEGA, INPUT_ENDIAN_Q, &
-         &                    INPUT_ENDIAN_TTSWR, INPUT_ENDIAN_TTLWR, &
-         &                    INPUT_ENDIAN_LRGHR, INPUT_ENDIAN_CNVHR, &
-         &                    INPUT_ENDIAN_VDFHR, &
          &                    INPUT_ENDIAN_TOPO
 
 
@@ -241,11 +205,6 @@ contains
     INPUT_TS_FILENAME    = ''
     INPUT_OMEGA_FILENAME = ''
     INPUT_Q_FILENAME     = ''
-    INPUT_TTSWR_FILENAME = ''
-    INPUT_TTLWR_FILENAME = ''
-    INPUT_LRGHR_FILENAME = ''
-    INPUT_CNVHR_FILENAME = ''
-    INPUT_VDFHR_FILENAME = ''
 
     INPUT_UNIT_Z    = 'm'
     INPUT_UNIT_PS   = 'hPa'
@@ -263,11 +222,6 @@ contains
     INPUT_UNDEF_Z       = ''
     INPUT_UNDEF_OMEGA   = ''
     INPUT_UNDEF_Q       = ''
-    INPUT_UNDEF_TTSWR   = ''
-    INPUT_UNDEF_TTLWR   = ''
-    INPUT_UNDEF_LRGHR   = ''
-    INPUT_UNDEF_CNVHR   = ''
-    INPUT_UNDEF_VDFHR   = ''
 
     INPUT_ENDIAN_DEFAULT = 'little'
     INPUT_ENDIAN_UVT     = ''
@@ -280,11 +234,6 @@ contains
     INPUT_ENDIAN_Z       = ''
     INPUT_ENDIAN_OMEGA   = ''
     INPUT_ENDIAN_Q       = ''
-    INPUT_ENDIAN_TTSWR   = ''
-    INPUT_ENDIAN_TTLWR   = ''
-    INPUT_ENDIAN_LRGHR   = ''
-    INPUT_ENDIAN_CNVHR   = ''
-    INPUT_ENDIAN_VDFHR   = ''
     INPUT_ENDIAN_TOPO    = ''
 
     INPUT_YDEF_SOUTH        = -90.0
@@ -422,16 +371,6 @@ contains
          &      INPUT_UNDEF_OMEGA_REAL )
     call undef( INPUT_UNDEF_Q, INPUT_UNDEF_DEFAULT_REAL, &
          &      INPUT_UNDEF_Q_REAL )
-    call undef( INPUT_UNDEF_TTSWR, INPUT_UNDEF_DEFAULT_REAL, &
-         &      INPUT_UNDEF_TTSWR_REAL )
-    call undef( INPUT_UNDEF_TTLWR, INPUT_UNDEF_DEFAULT_REAL, &
-         &      INPUT_UNDEF_TTLWR_REAL )
-    call undef( INPUT_UNDEF_LRGHR, INPUT_UNDEF_DEFAULT_REAL, &
-         &      INPUT_UNDEF_LRGHR_REAL )
-    call undef( INPUT_UNDEF_CNVHR, INPUT_UNDEF_DEFAULT_REAL, &
-         &      INPUT_UNDEF_CNVHR_REAL )
-    call undef( INPUT_UNDEF_VDFHR, INPUT_UNDEF_DEFAULT_REAL, &
-         &      INPUT_UNDEF_VDFHR_REAL )
 
 
     if( INPUT_ENDIAN_DEFAULT == 'little' ) then
@@ -463,16 +402,6 @@ contains
          &       INPUT_ENDIAN_OMEGA_INT )
     call endian( INPUT_ENDIAN_Q, INPUT_ENDIAN_DEFAULT_INT, &
          &       INPUT_ENDIAN_Q_INT )
-    call endian( INPUT_ENDIAN_TTSWR, INPUT_ENDIAN_DEFAULT_INT, &
-         &       INPUT_ENDIAN_TTSWR_INT )
-    call endian( INPUT_ENDIAN_TTLWR, INPUT_ENDIAN_DEFAULT_INT, &
-         &       INPUT_ENDIAN_TTLWR_INT )
-    call endian( INPUT_ENDIAN_LRGHR, INPUT_ENDIAN_DEFAULT_INT, &
-         &       INPUT_ENDIAN_LRGHR_INT )
-    call endian( INPUT_ENDIAN_CNVHR, INPUT_ENDIAN_DEFAULT_INT, &
-         &       INPUT_ENDIAN_CNVHR_INT )
-    call endian( INPUT_ENDIAN_VDFHR, INPUT_ENDIAN_DEFAULT_INT, &
-         &       INPUT_ENDIAN_VDFHR_INT )
     call endian( INPUT_ENDIAN_TOPO, INPUT_ENDIAN_DEFAULT_INT, &
          &       INPUT_ENDIAN_TOPO_INT )
 
