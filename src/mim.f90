@@ -849,36 +849,43 @@ program mim
 
      !***** Diabatic Heating *****!
      ! q_zm : zonal mean diabatic heating
-     call biseki_biseki( q_3d, q_zm )
+     !call biseki_biseki( q_3d, q_zm )
 
-     ! q_3d [J/(kg s)] -> q_ex_3d [K/s] ( = Q / Pi )
-     do k=1, km
-        do j=1, jm
-           do i=1, im
-              q_ex_3d(i,j,k) = q_3d(i,j,k) &
-                   &         / ( cp * ( pin(k) / 1000.0 )**rkappa )
-           end do
-        end do
-     end do
-     call biseki_biseki( q_ex_3d, q_ex_zm )
+     !! q_3d [J/(kg s)] -> q_ex_3d [K/s] ( = Q / Pi )
+     !do k=1, km
+     !   do j=1, jm
+     !      do i=1, im
+     !         q_ex_3d(i,j,k) = q_3d(i,j,k) &
+     !              &         / ( cp * ( pin(k) / 1000.0 )**rkappa )
+     !      end do
+     !   end do
+     !end do
+     !call biseki_biseki( q_ex_3d, q_ex_zm )
 
-     ! Qgz
-     do k=1, ko
-        do j=1, jm
-           qgz_zm(j,k) = q_ex_zm(j,k) * ( pout(k) / 1000.0 )**rkappa * cp
-        end do
-     end do
+     !! Qgz
+     !do k=1, ko
+     !   do j=1, jm
+     !      qgz_zm(j,k) = q_ex_zm(j,k) * ( pout(k) / 1000.0 )**rkappa * cp
+     !   end do
+     !end do
 
-     ! qe_zm : zonal mean eddy diabatic heating
-     call diabatic_qe( im, jm, km, ko, q_3d, pin, pd_p, &
-          &            qe_zm )
+     !! qe_zm : zonal mean eddy diabatic heating
+     !call diabatic_qe( im, jm, km, ko, q_3d, pin, pd_p, &
+     !     &            qe_zm )
 
-     ! qz_gmean : global mean zonal diabatic heating
-     call diabatic_qz( jm, ko, q_ex_zm, pout, pdd_pd, &
-          &            qz_pdd )
-     call integral_p( 1, ko, pout, p_pdds, qz_pdd, &
-          &           qz_gmean )
+     !! qz_gmean : global mean zonal diabatic heating
+     !call diabatic_qz( jm, ko, q_ex_zm, pout, pdd_pd, &
+     !     &            qz_pdd )
+     !call integral_p( 1, ko, pout, p_pdds, qz_pdd, &
+     !     &           qz_gmean )
 
+
+    
+     call diabaticHeating(q_3d(1:im,1:jm,1:km), &  !! IN
+                        & q_zm(1:jm,1:ko)     , &  !! OUT
+                        & qgz_zm(1:jm,1:ko)   , &  !! OUT
+                        & qe_zm(1:jm,1:ko)    , &  !! OUT
+                        & qz_gmean(1)           )  !! OUT
      
      if (INPUT_TTSWR_FILENAME /= '') then
          call diabaticHeating(ttswr_3d(1:im,1:jm,1:km), &  !! IN
@@ -919,6 +926,14 @@ program mim
                             & vdfhr_qe_zm(1:jm,1:ko)  , &  !! OUT
                             & vdfhr_qz_gmean(1)         )  !! OUT
      endif
+
+     write(*,'(a,es15.6)') 'q_zm : ', sqrt(sum((ttswr_zm+ttlwr_zm+lrghr_zm+cnvhr_zm+vdfhr_zm - q_zm)**2)) / sqrt(sum(q_zm*q_zm))
+     write(*,'(a,es15.6)') 'qgz_zm : ', sqrt(sum((ttswr_gz_zm+ttlwr_gz_zm+lrghr_gz_zm+cnvhr_gz_zm+vdfhr_gz_zm-qgz_zm)**2)) &
+                                      & / sqrt(sum(qgz_zm*qgz_zm))
+     write(*,'(a,es15.6)') 'qe_zm : ',  sqrt(sum((ttswr_qe_zm+ttlwr_qe_zm+lrghr_qe_zm+cnvhr_qe_zm+vdfhr_qe_zm-qe_zm)**2)) &
+                                      & / sqrt(sum(qe_zm*qe_zm))
+     write(*,'(a,es15.6)') 'gz_gmean : ', sum(ttswr_qz_gmean+ttlwr_qz_gmean+lrghr_qz_gmean+cnvhr_qz_gmean+vdfhr_qz_gmean-qz_gmean) &
+                                       & / qz_gmean(1)
 
 
      ! ***** below not checked *****!
