@@ -59,6 +59,7 @@ program mim
   type(grads_info) :: ginfo_wave   ! for OUTPUT_WAVE
 
   logical :: Q_exist
+  logical :: Qcomps_exist
 
 
 !  write(*,*) "MIM Version dev"
@@ -266,12 +267,12 @@ program mim
   open(newunit=warn_unit, file="../output/warnlog.txt", action="write")
   open(newunit=nan_detector, file='../output/nans.txt', action='write')
 
-  Q_exist = (INPUT_Q_FILENAME /= '') .OR. &
-            (INPUT_TTSWR_FILENAME /= '' .AND. &
-             INPUT_TTLWR_FILENAME /= '' .AND. &
-             INPUT_LRGHR_FILENAME /= '' .AND. &
-             INPUT_CNVHR_FILENAME /= '' .AND. &
-             INPUT_VDFHR_FILENAME /= ''       )
+  Q_exist      =  (INPUT_Q_FILENAME     /= '')
+  Qcomps_exist = ((INPUT_TTSWR_FILENAME /= '') .AND. &
+                & (INPUT_TTLWR_FILENAME /= '') .AND. &
+                & (INPUT_LRGHR_FILENAME /= '') .AND. &
+                & (INPUT_CNVHR_FILENAME /= '') .AND. &
+                & (INPUT_VDFHR_FILENAME /= '')       )
                  
 
   !**************************************************!
@@ -427,15 +428,15 @@ program mim
      call undef_fill( im, jm, km, INPUT_UNDEF_VDFHR_REAL, pin, vdfhr_3d )
 
 
-     if(  INPUT_Q_FILENAME     == '' .AND. &
-        & INPUT_TTSWR_FILENAME /= '' .AND. &
-        & INPUT_TTLWR_FILENAME /= '' .AND. &
-        & INPUT_LRGHR_FILENAME /= '' .AND. &
-        & INPUT_CNVHR_FILENAME /= '' .AND. &
-        & INPUT_VDFHR_FILENAME /= ''       ) then
-
-       q_3d(1:im,1:jm,1:km) = ttswr_3d(1:im,1:jm,1:km) + ttlwr_3d(1:im,1:jm,1:km) + lrghr_3d(1:im,1:jm,1:km) + &
-                            & cnvhr_3d(1:im,1:jm,1:km) + vdfhr_3d(1:im,1:jm,1:km)
+     !if(  INPUT_Q_FILENAME     == '' .AND. &
+     !   & INPUT_TTSWR_FILENAME /= '' .AND. &
+     !   & INPUT_TTLWR_FILENAME /= '' .AND. &
+     !   & INPUT_LRGHR_FILENAME /= '' .AND. &
+     !   & INPUT_CNVHR_FILENAME /= '' .AND. &
+     !   & INPUT_VDFHR_FILENAME /= ''       ) then
+     if ((.NOT. Q_exist) .AND. Qcomps_exist) then
+         q_3d(1:im,1:jm,1:km) = ttswr_3d(1:im,1:jm,1:km) + ttlwr_3d(1:im,1:jm,1:km) + lrghr_3d(1:im,1:jm,1:km) + &
+                              & cnvhr_3d(1:im,1:jm,1:km) + vdfhr_3d(1:im,1:jm,1:km)
      endif
 
      !where( q_3d /= INPUT_UNDEF_Q_REAL )
@@ -588,7 +589,9 @@ program mim
 
      !***** D(pt)/Dt (D: Lagrangian) *****!
      !if( INPUT_Q_FILENAME == "" ) then
-     if( .NOT. Q_exist ) then
+     !if( .NOT. Q_exist ) then
+     if ((.NOT. Q_exist) .AND. (.NOT. Qcomps_exist)) then
+         !write(*,*) 'Q is estimated by time derivative of pt'
 
         if( INPUT_OMEGA_FILENAME == "" ) then
            ! calculate omega from continuity Eq.
@@ -612,6 +615,7 @@ program mim
 
 
      else
+        !write(*,*) 'Q input!'
         call get_pt_dot_q( q_3d, pt_dot )  ! Q -> D(pt)/dt
      end if
      call biseki_biseki( pt_dot, pt_dot_zm )
@@ -881,11 +885,11 @@ program mim
 
 
     
-     call diabaticHeating(q_3d(1:im,1:jm,1:km), &  !! IN
-                        & q_zm(1:jm,1:ko)     , &  !! OUT
-                        & qgz_zm(1:jm,1:ko)   , &  !! OUT
-                        & qe_zm(1:jm,1:ko)    , &  !! OUT
-                        & qz_gmean(1)           )  !! OUT
+     !call diabaticHeating(q_3d(1:im,1:jm,1:km), &  !! IN
+     !                   & q_zm(1:jm,1:ko)     , &  !! OUT
+     !                   & qgz_zm(1:jm,1:ko)   , &  !! OUT
+     !                   & qe_zm(1:jm,1:ko)    , &  !! OUT
+     !                   & qz_gmean(1)           )  !! OUT
      
      if (INPUT_TTSWR_FILENAME /= '') then
          call diabaticHeating(ttswr_3d(1:im,1:jm,1:km), &  !! IN
@@ -927,13 +931,48 @@ program mim
                             & vdfhr_qz_gmean(1)         )  !! OUT
      endif
 
-     write(*,'(a,es15.6)') 'q_zm : ', sqrt(sum((ttswr_zm+ttlwr_zm+lrghr_zm+cnvhr_zm+vdfhr_zm - q_zm)**2)) / sqrt(sum(q_zm*q_zm))
-     write(*,'(a,es15.6)') 'qgz_zm : ', sqrt(sum((ttswr_gz_zm+ttlwr_gz_zm+lrghr_gz_zm+cnvhr_gz_zm+vdfhr_gz_zm-qgz_zm)**2)) &
-                                      & / sqrt(sum(qgz_zm*qgz_zm))
-     write(*,'(a,es15.6)') 'qe_zm : ',  sqrt(sum((ttswr_qe_zm+ttlwr_qe_zm+lrghr_qe_zm+cnvhr_qe_zm+vdfhr_qe_zm-qe_zm)**2)) &
-                                      & / sqrt(sum(qe_zm*qe_zm))
-     write(*,'(a,es15.6)') 'gz_gmean : ', sum(ttswr_qz_gmean+ttlwr_qz_gmean+lrghr_qz_gmean+cnvhr_qz_gmean+vdfhr_qz_gmean-qz_gmean) &
-                                       & / qz_gmean(1)
+     if ((.NOT. Q_exist) .AND. Qcomps_exist) then
+        !write(*,*) 'Q terms are computed by the sum of 5 parameters'
+        q_zm(1:jm,1:ko) = ttswr_zm(1:jm,1:ko) + &
+                        & ttlwr_zm(1:jm,1:ko) + &
+                        & lrghr_zm(1:jm,1:ko) + &
+                        & cnvhr_zm(1:jm,1:ko) + &
+                        & vdfhr_zm(1:jm,1:ko)
+
+        qgz_zm(1:jm,1:ko) = ttswr_gz_zm(1:jm,1:ko) + &
+                          & ttlwr_gz_zm(1:jm,1:ko) + &
+                          & lrghr_gz_zm(1:jm,1:ko) + &
+                          & cnvhr_gz_zm(1:jm,1:ko) + &
+                          & vdfhr_gz_zm(1:jm,1:ko)
+
+        qe_zm(1:jm,1:ko) = ttswr_qe_zm(1:jm,1:ko) + &
+                         & ttlwr_qe_zm(1:jm,1:ko) + &
+                         & lrghr_qe_zm(1:jm,1:ko) + &
+                         & cnvhr_qe_zm(1:jm,1:ko) + &
+                         & vdfhr_qe_zm(1:jm,1:ko)
+
+        qz_gmean(1) = ttswr_qz_gmean(1) + &
+                    & ttlwr_qz_gmean(1) + &
+                    & lrghr_qz_gmean(1) + &
+                    & cnvhr_qz_gmean(1) + &
+                    & vdfhr_qz_gmean(1)
+
+     else
+         !write(*,*) ' Q is estimated independently'
+         call diabaticHeating(q_3d(1:im,1:jm,1:km), &  !! IN
+                            & q_zm(1:jm,1:ko)     , &  !! OUT
+                            & qgz_zm(1:jm,1:ko)   , &  !! OUT
+                            & qe_zm(1:jm,1:ko)    , &  !! OUT
+                            & qz_gmean(1)           )  !! OUT
+     endif
+
+     !write(*,'(a,es15.6)') 'q_zm : ', sqrt(sum((ttswr_zm+ttlwr_zm+lrghr_zm+cnvhr_zm+vdfhr_zm - q_zm)**2)) / sqrt(sum(q_zm*q_zm))
+     !write(*,'(a,es15.6)') 'qgz_zm : ', sqrt(sum((ttswr_gz_zm+ttlwr_gz_zm+lrghr_gz_zm+cnvhr_gz_zm+vdfhr_gz_zm-qgz_zm)**2)) &
+     !                                 & / sqrt(sum(qgz_zm*qgz_zm))
+     !write(*,'(a,es15.6)') 'qe_zm : ',  sqrt(sum((ttswr_qe_zm+ttlwr_qe_zm+lrghr_qe_zm+cnvhr_qe_zm+vdfhr_qe_zm-qe_zm)**2)) &
+     !                                 & / sqrt(sum(qe_zm*qe_zm))
+     !write(*,'(a,es15.6)') 'gz_gmean : ', sum(ttswr_qz_gmean+ttlwr_qz_gmean+lrghr_qz_gmean+cnvhr_qz_gmean+vdfhr_qz_gmean-qz_gmean) &
+     !                                  & / qz_gmean(1)
 
 
      ! ***** below not checked *****!
