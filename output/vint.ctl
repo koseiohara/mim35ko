@@ -8,9 +8,9 @@ options little_endian yrev
 xdef 1 linear 1 1
 ydef 145 linear -90.0 1.25
 zdef 1 levels 1000
-tdef 77432 linear 00Z01JAN1949 6hr
+tdef 1464 linear 00Z01JAN1949 6hr
 
-VARS 34
+VARS 49
 kz           1 99  VI (=Vertically Integrated) Zonal Kinetic Energy [J/m^2]
 ke           1 99  VI Eddy Kinetic Energy [J/m^2]
 az           1 99  VI Zonal Available Potential Energy (not for gmean) [J/m^2]
@@ -30,8 +30,23 @@ c_kz_ke_tan  1 99  VI C(Kz->Ke) by tan [W/m^2]
 c_kz_ke      1 99  VI C(Kz->Ke) [W/m^2]
 c_kz_w       1 99  VI C(Kz->W) = C(Kz->Ke) + C(Kz->Ae) [W/m^2]
 q            1 99  Diabatic Heating [W/m^2]
+ttswr        1 99  Diabatic Heating [W/m^2] by short wave radiation
+ttlwr        1 99  Diabatic Heating [W/m^2] by long wave radiation
+lrghr        1 99  Diabatic Heating [W/m^2] by large scale condensation
+cnvhr        1 99  Diabatic Heating [W/m^2] by convection
+vdfhr        1 99  Diabatic Heating [W/m^2] by vertical diffusion
 qgz          1 99  Zonal Diabatic Heating (+Ground State) [W/m^2]
+ttswr_gz     1 99  Zonal Diabatic Heating (+Ground State) [W/m^2] by short wave radiation
+ttlwr_gz     1 99  Zonal Diabatic Heating (+Ground State) [W/m^2] by long wave radiation
+lrghr_gz     1 99  Zonal Diabatic Heating (+Ground State) [W/m^2] by large scale condensation
+cnvhr_gz     1 99  Zonal Diabatic Heating (+Ground State) [W/m^2] by convection
+vdfhr_gz     1 99  Zonal Diabatic Heating (+Ground State) [W/m^2] by vertical diffusion
 qe           1 99  Eddy Available Diabatic Heating [W/m^2]
+ttswr_qe     1 99  Eddy Available Diabatic Heating [W/m^2] by short wave radiation
+ttlwr_qe     1 99  Eddy Available Diabatic Heating [W/m^2] by long wave radiation
+lrghr_qe     1 99  Eddy Available Diabatic Heating [W/m^2] by large scale condensation
+cnvhr_qe     1 99  Eddy Available Diabatic Heating [W/m^2] by convection
+vdfhr_qe     1 99  Eddy Available Diabatic Heating [W/m^2] by vertical diffusion
 dkzdt_vkz    1 99  VI Kz advection by v [kg/(m s^3)]
 dkzdt_wkz    1 99  VI Kz advection by w+ [kg/(m s^3)]
 dkedt_uy     1 99  VI Wave Energy Flux Div. d(u Fy)/dy [kg/(m s^3)]

@@ -24,6 +24,8 @@ program mim
   use biseki, only : biseki_ini, biseki_biseki, biseki_sekibun, biseki_bibun
   use biseki_y, only : biseki_y_ini, biseki_y_biseki_y, &
        &               biseki_y_sekibun_y, biseki_y_bibun_y
+
+  use diabatic_all, only : diabaticHeating
   implicit none
 
   ! temporal variables
@@ -44,12 +46,20 @@ program mim
   type(grads_info) :: ginfo_msl   ! for INPUT_MSL
   type(grads_info) :: ginfo_ts    ! for INPUT_TS
   type(grads_info) :: ginfo_q     ! for INPUT_Q
+  type(grads_info) :: ginfo_ttswr ! for INPUT_TTSWR
+  type(grads_info) :: ginfo_ttlwr ! for INPUT_TTLWR
+  type(grads_info) :: ginfo_lrghr ! for INPUT_LRGHR
+  type(grads_info) :: ginfo_cnvhr ! for INPUT_CNVHR
+  type(grads_info) :: ginfo_vdfhr ! for INPUT_VDFHR
 
   ! output information
   type(grads_info) :: ginfo_zonal  ! for OUTPUT_ZONAL
   type(grads_info) :: ginfo_vint   ! for OUTPUT_VINT
   type(grads_info) :: ginfo_gmean  ! for OUTPUT_GMEAN
   type(grads_info) :: ginfo_wave   ! for OUTPUT_WAVE
+
+  logical :: Q_exist
+  logical :: Qcomps_exist
 
 
 !  write(*,*) "MIM Version dev"
@@ -157,6 +167,41 @@ program mim
           &           ginfo_q )
   end if
 
+  if( INPUT_TTSWR_FILENAME /= '' ) then
+     call grads_open( 71, INPUT_TTSWR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_TTSWR_INT, &
+          &           ginfo_ttswr )
+  end if
+
+  if( INPUT_TTLWR_FILENAME /= '' ) then
+     call grads_open( 72, INPUT_TTLWR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_TTLWR_INT, &
+          &           ginfo_ttlwr )
+  end if
+
+  if( INPUT_LRGHR_FILENAME /= '' ) then
+     call grads_open( 72, INPUT_LRGHR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_LRGHR_INT, &
+          &           ginfo_lrghr )
+  end if
+
+  if( INPUT_CNVHR_FILENAME /= '' ) then
+     call grads_open( 73, INPUT_CNVHR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_CNVHR_INT, &
+          &           ginfo_cnvhr )
+  end if
+
+  if( INPUT_VDFHR_FILENAME /= '' ) then
+     call grads_open( 74, INPUT_VDFHR_FILENAME, im, jm, km, &
+          &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
+          &           INPUT_ENDIAN_VDFHR_INT, &
+          &           ginfo_vdfhr )
+  end if
+
 
   !***** output *****!
   ! - output data is YREV, but NOT ZREV.
@@ -221,6 +266,14 @@ program mim
 
   open(newunit=warn_unit, file="../output/warnlog.txt", action="write")
   open(newunit=nan_detector, file='../output/nans.txt', action='write')
+
+  Q_exist      =  (INPUT_Q_FILENAME     /= '')
+  Qcomps_exist = ((INPUT_TTSWR_FILENAME /= '') .AND. &
+                & (INPUT_TTLWR_FILENAME /= '') .AND. &
+                & (INPUT_LRGHR_FILENAME /= '') .AND. &
+                & (INPUT_CNVHR_FILENAME /= '') .AND. &
+                & (INPUT_VDFHR_FILENAME /= '')       )
+                 
 
   !**************************************************!
   !                                                  !
@@ -330,9 +383,35 @@ program mim
         q_3d(:,:,:) = 0
      end if
 
-     where( q_3d /= INPUT_UNDEF_Q_REAL )
-        q_3d = q_3d * cp        ! [K/s] (dT/dt) -> [J/(kg s)]
-     end where
+     if (INPUT_TTSWR_FILENAME /= '') then
+         call grads_read(ginfo_ttswr, ttswr_3d)
+     else
+         ttswr_3d(1:im,1:jm,1:km) = 0.
+     endif
+
+     if (INPUT_TTLWR_FILENAME /= '') then
+         call grads_read(ginfo_ttlwr, ttlwr_3d)
+     else
+         ttlwr_3d(1:im,1:jm,1:km) = 0.
+     endif
+
+     if (INPUT_LRGHR_FILENAME /= '') then
+         call grads_read(ginfo_lrghr, lrghr_3d)
+     else
+         lrghr_3d(1:im,1:jm,1:km) = 0.
+     endif
+
+     if (INPUT_CNVHR_FILENAME /= '') then
+         call grads_read(ginfo_cnvhr, cnvhr_3d)
+     else
+         cnvhr_3d(1:im,1:jm,1:km) = 0.
+     endif
+
+     if (INPUT_VDFHR_FILENAME /= '') then
+         call grads_read(ginfo_vdfhr, vdfhr_3d)
+     else
+         vdfhr_3d(1:im,1:jm,1:km) = 0.
+     endif
 
 
      !********** interpolate/extrapolate to undef data **********!
@@ -342,6 +421,42 @@ program mim
      call undef_fill( im, jm, km, INPUT_UNDEF_Z_REAL    , pin, z )
      call undef_fill( im, jm, km, INPUT_UNDEF_OMEGA_REAL, pin, omega )
      call undef_fill( im, jm, km, INPUT_UNDEF_Q_REAL    , pin, q_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_TTSWR_REAL, pin, ttswr_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_TTLWR_REAL, pin, ttlwr_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_LRGHR_REAL, pin, lrghr_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_CNVHR_REAL, pin, cnvhr_3d )
+     call undef_fill( im, jm, km, INPUT_UNDEF_VDFHR_REAL, pin, vdfhr_3d )
+
+
+     !if(  INPUT_Q_FILENAME     == '' .AND. &
+     !   & INPUT_TTSWR_FILENAME /= '' .AND. &
+     !   & INPUT_TTLWR_FILENAME /= '' .AND. &
+     !   & INPUT_LRGHR_FILENAME /= '' .AND. &
+     !   & INPUT_CNVHR_FILENAME /= '' .AND. &
+     !   & INPUT_VDFHR_FILENAME /= ''       ) then
+     if ((.NOT. Q_exist) .AND. Qcomps_exist) then
+         q_3d(1:im,1:jm,1:km) = ttswr_3d(1:im,1:jm,1:km) + ttlwr_3d(1:im,1:jm,1:km) + lrghr_3d(1:im,1:jm,1:km) + &
+                              & cnvhr_3d(1:im,1:jm,1:km) + vdfhr_3d(1:im,1:jm,1:km)
+     endif
+
+     !where( q_3d /= INPUT_UNDEF_Q_REAL )
+     !   q_3d = q_3d * cp        ! [K/s] (dT/dt) -> [J/(kg s)]
+     !end where
+     q_3d(1:im,1:jm,1:km)     = q_3d(1:im,1:jm,1:km)     * cp
+     ttswr_3d(1:im,1:jm,1:km) = ttswr_3d(1:im,1:jm,1:km) * cp
+     ttlwr_3d(1:im,1:jm,1:km) = ttlwr_3d(1:im,1:jm,1:km) * cp
+     lrghr_3d(1:im,1:jm,1:km) = lrghr_3d(1:im,1:jm,1:km) * cp
+     cnvhr_3d(1:im,1:jm,1:km) = cnvhr_3d(1:im,1:jm,1:km) * cp
+     vdfhr_3d(1:im,1:jm,1:km) = vdfhr_3d(1:im,1:jm,1:km) * cp
+
+
+     !!********** interpolate/extrapolate to undef data **********!
+     !call undef_fill( im, jm, km, INPUT_UNDEF_U_REAL    , pin, u )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_V_REAL    , pin, v )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_T_REAL    , pin, t )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_Z_REAL    , pin, z )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_OMEGA_REAL, pin, omega )
+     !call undef_fill( im, jm, km, INPUT_UNDEF_Q_REAL    , pin, q_3d )
 
 
      !********** check value **********!
@@ -473,7 +588,10 @@ program mim
 
 
      !***** D(pt)/Dt (D: Lagrangian) *****!
-     if( INPUT_Q_FILENAME == "" ) then
+     !if( INPUT_Q_FILENAME == "" ) then
+     !if( .NOT. Q_exist ) then
+     if ((.NOT. Q_exist) .AND. (.NOT. Qcomps_exist)) then
+         !write(*,*) 'Q is estimated by time derivative of pt'
 
         if( INPUT_OMEGA_FILENAME == "" ) then
            ! calculate omega from continuity Eq.
@@ -495,7 +613,9 @@ program mim
              &                 pt_dot )        ! pt, u, v, w -> D(pt)/dt
         call get_pt_dot_q_inv( pt_dot, q_3d )  ! D(pt)/dt -> Q
 
+
      else
+        !write(*,*) 'Q input!'
         call get_pt_dot_q( q_3d, pt_dot )  ! Q -> D(pt)/dt
      end if
      call biseki_biseki( pt_dot, pt_dot_zm )
@@ -733,35 +853,126 @@ program mim
 
      !***** Diabatic Heating *****!
      ! q_zm : zonal mean diabatic heating
-     call biseki_biseki( q_3d, q_zm )
+     !call biseki_biseki( q_3d, q_zm )
 
-     ! q_3d [J/(kg s)] -> q_ex_3d [K/s] ( = Q / Pi )
-     do k=1, km
-        do j=1, jm
-           do i=1, im
-              q_ex_3d(i,j,k) = q_3d(i,j,k) &
-                   &         / ( cp * ( pin(k) / 1000.0 )**rkappa )
-           end do
-        end do
-     end do
-     call biseki_biseki( q_ex_3d, q_ex_zm )
+     !! q_3d [J/(kg s)] -> q_ex_3d [K/s] ( = Q / Pi )
+     !do k=1, km
+     !   do j=1, jm
+     !      do i=1, im
+     !         q_ex_3d(i,j,k) = q_3d(i,j,k) &
+     !              &         / ( cp * ( pin(k) / 1000.0 )**rkappa )
+     !      end do
+     !   end do
+     !end do
+     !call biseki_biseki( q_ex_3d, q_ex_zm )
 
-     ! Qgz
-     do k=1, ko
-        do j=1, jm
-           qgz_zm(j,k) = q_ex_zm(j,k) * ( pout(k) / 1000.0 )**rkappa * cp
-        end do
-     end do
+     !! Qgz
+     !do k=1, ko
+     !   do j=1, jm
+     !      qgz_zm(j,k) = q_ex_zm(j,k) * ( pout(k) / 1000.0 )**rkappa * cp
+     !   end do
+     !end do
 
-     ! qe_zm : zonal mean eddy diabatic heating
-     call diabatic_qe( im, jm, km, ko, q_3d, pin, pd_p, &
-          &            qe_zm )
+     !! qe_zm : zonal mean eddy diabatic heating
+     !call diabatic_qe( im, jm, km, ko, q_3d, pin, pd_p, &
+     !     &            qe_zm )
 
-     ! qz_gmean : global mean zonal diabatic heating
-     call diabatic_qz( jm, ko, q_ex_zm, pout, pdd_pd, &
-          &            qz_pdd )
-     call integral_p( 1, ko, pout, p_pdds, qz_pdd, &
-          &           qz_gmean )
+     !! qz_gmean : global mean zonal diabatic heating
+     !call diabatic_qz( jm, ko, q_ex_zm, pout, pdd_pd, &
+     !     &            qz_pdd )
+     !call integral_p( 1, ko, pout, p_pdds, qz_pdd, &
+     !     &           qz_gmean )
+
+
+    
+     !call diabaticHeating(q_3d(1:im,1:jm,1:km), &  !! IN
+     !                   & q_zm(1:jm,1:ko)     , &  !! OUT
+     !                   & qgz_zm(1:jm,1:ko)   , &  !! OUT
+     !                   & qe_zm(1:jm,1:ko)    , &  !! OUT
+     !                   & qz_gmean(1)           )  !! OUT
+     
+     if (INPUT_TTSWR_FILENAME /= '') then
+         call diabaticHeating(ttswr_3d(1:im,1:jm,1:km), &  !! IN
+                            & ttswr_zm(1:jm,1:ko)     , &  !! OUT
+                            & ttswr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttswr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttswr_qz_gmean(1)         )  !! OUT
+     endif
+
+     if (INPUT_TTLWR_FILENAME /= '') then
+         call diabaticHeating(ttlwr_3d(1:im,1:jm,1:km), &  !! IN
+                            & ttlwr_zm(1:jm,1:ko)     , &  !! OUT
+                            & ttlwr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttlwr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttlwr_qz_gmean(1)         )  !! OUT
+     endif
+
+     if (INPUT_LRGHR_FILENAME /= '') then
+         call diabaticHeating(lrghr_3d(1:im,1:jm,1:km), &  !! IN
+                            & lrghr_zm(1:jm,1:ko)     , &  !! OUT
+                            & lrghr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & lrghr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & lrghr_qz_gmean(1)         )  !! OUT
+     endif
+
+     if (INPUT_CNVHR_FILENAME /= '') then
+         call diabaticHeating(cnvhr_3d(1:im,1:jm,1:km), &  !! IN
+                            & cnvhr_zm(1:jm,1:ko)     , &  !! OUT
+                            & cnvhr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & cnvhr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & cnvhr_qz_gmean(1)         )  !! OUT
+     endif
+
+     if (INPUT_VDFHR_FILENAME /= '') then
+         call diabaticHeating(vdfhr_3d(1:im,1:jm,1:km), &  !! IN
+                            & vdfhr_zm(1:jm,1:ko)     , &  !! OUT
+                            & vdfhr_gz_zm(1:jm,1:ko)  , &  !! OUT
+                            & vdfhr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & vdfhr_qz_gmean(1)         )  !! OUT
+     endif
+
+     if ((.NOT. Q_exist) .AND. Qcomps_exist) then
+        !write(*,*) 'Q terms are computed by the sum of 5 parameters'
+        q_zm(1:jm,1:ko) = ttswr_zm(1:jm,1:ko) + &
+                        & ttlwr_zm(1:jm,1:ko) + &
+                        & lrghr_zm(1:jm,1:ko) + &
+                        & cnvhr_zm(1:jm,1:ko) + &
+                        & vdfhr_zm(1:jm,1:ko)
+
+        qgz_zm(1:jm,1:ko) = ttswr_gz_zm(1:jm,1:ko) + &
+                          & ttlwr_gz_zm(1:jm,1:ko) + &
+                          & lrghr_gz_zm(1:jm,1:ko) + &
+                          & cnvhr_gz_zm(1:jm,1:ko) + &
+                          & vdfhr_gz_zm(1:jm,1:ko)
+
+        qe_zm(1:jm,1:ko) = ttswr_qe_zm(1:jm,1:ko) + &
+                         & ttlwr_qe_zm(1:jm,1:ko) + &
+                         & lrghr_qe_zm(1:jm,1:ko) + &
+                         & cnvhr_qe_zm(1:jm,1:ko) + &
+                         & vdfhr_qe_zm(1:jm,1:ko)
+
+        qz_gmean(1) = ttswr_qz_gmean(1) + &
+                    & ttlwr_qz_gmean(1) + &
+                    & lrghr_qz_gmean(1) + &
+                    & cnvhr_qz_gmean(1) + &
+                    & vdfhr_qz_gmean(1)
+
+     else
+         !write(*,*) ' Q is estimated independently'
+         call diabaticHeating(q_3d(1:im,1:jm,1:km), &  !! IN
+                            & q_zm(1:jm,1:ko)     , &  !! OUT
+                            & qgz_zm(1:jm,1:ko)   , &  !! OUT
+                            & qe_zm(1:jm,1:ko)    , &  !! OUT
+                            & qz_gmean(1)           )  !! OUT
+     endif
+
+     !write(*,'(a,es15.6)') 'q_zm : ', sqrt(sum((ttswr_zm+ttlwr_zm+lrghr_zm+cnvhr_zm+vdfhr_zm - q_zm)**2)) / sqrt(sum(q_zm*q_zm))
+     !write(*,'(a,es15.6)') 'qgz_zm : ', sqrt(sum((ttswr_gz_zm+ttlwr_gz_zm+lrghr_gz_zm+cnvhr_gz_zm+vdfhr_gz_zm-qgz_zm)**2)) &
+     !                                 & / sqrt(sum(qgz_zm*qgz_zm))
+     !write(*,'(a,es15.6)') 'qe_zm : ',  sqrt(sum((ttswr_qe_zm+ttlwr_qe_zm+lrghr_qe_zm+cnvhr_qe_zm+vdfhr_qe_zm-qe_zm)**2)) &
+     !                                 & / sqrt(sum(qe_zm*qe_zm))
+     !write(*,'(a,es15.6)') 'gz_gmean : ', sum(ttswr_qz_gmean+ttlwr_qz_gmean+lrghr_qz_gmean+cnvhr_qz_gmean+vdfhr_qz_gmean-qz_gmean) &
+     !                                  & / qz_gmean(1)
 
 
      ! ***** below not checked *****!
@@ -849,8 +1060,26 @@ program mim
         call grads_write( icount, 'c_kz_ke'    , ginfo_zonal, c_kz_ke )
         call grads_write( icount, 'c_kz_w'     , ginfo_zonal, c_kz_w )
         call grads_write( icount, 'q_zm'       , ginfo_zonal, q_zm )
+        call grads_write( icount, 'ttswr_zm'   , ginfo_zonal, ttswr_zm )
+        call grads_write( icount, 'ttlwr_zm'   , ginfo_zonal, ttlwr_zm )
+
+        call grads_write( icount, 'lrghr_zm'   , ginfo_zonal, lrghr_zm )
+        call grads_write( icount, 'cnvhr_zm'   , ginfo_zonal, cnvhr_zm )
+        call grads_write( icount, 'vdfhr_zm'   , ginfo_zonal, vdfhr_zm )
         call grads_write( icount, 'qgz_zm'     , ginfo_zonal, qgz_zm )
+        call grads_write( icount, 'ttswr_gz_zm', ginfo_zonal, ttswr_gz_zm )
+
+        call grads_write( icount, 'ttlwr_gz_zm', ginfo_zonal, ttlwr_gz_zm )
+        call grads_write( icount, 'lrghr_gz_zm', ginfo_zonal, lrghr_gz_zm )
+        call grads_write( icount, 'cnvhr_gz_zm', ginfo_zonal, cnvhr_gz_zm )
+        call grads_write( icount, 'vdfhr_gz_zm', ginfo_zonal, vdfhr_gz_zm )
         call grads_write( icount, 'qe_zm'      , ginfo_zonal, qe_zm )
+
+        call grads_write( icount, 'ttswr_qe_zm', ginfo_zonal, ttswr_qe_zm )
+        call grads_write( icount, 'ttlwr_qe_zm', ginfo_zonal, ttlwr_qe_zm )
+        call grads_write( icount, 'lrghr_qe_zm', ginfo_zonal, lrghr_qe_zm )
+        call grads_write( icount, 'cnvhr_qe_zm', ginfo_zonal, cnvhr_qe_zm )
+        call grads_write( icount, 'vdfhr_qe_zm', ginfo_zonal, vdfhr_qe_zm )
 
         call grads_write( icount, 'kz_zm'      , ginfo_zonal, kz_zm )
         call grads_write( icount, 'ke_zm'      , ginfo_zonal, ke_zm )
@@ -931,11 +1160,56 @@ program mim
         call integral_p( jm, ko, pout, p_pds, q_zm, temp_vint )
         call grads_write( icount, 'q_zm_vint', ginfo_vint, temp_vint )
 
+        call integral_p( jm, ko, pout, p_pds, ttswr_zm, temp_vint )
+        call grads_write( icount, 'ttswr_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, ttlwr_zm, temp_vint )
+        call grads_write( icount, 'ttlwr_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, lrghr_zm, temp_vint )
+        call grads_write( icount, 'lrghr_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, cnvhr_zm, temp_vint )
+        call grads_write( icount, 'cnvhr_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, vdfhr_zm, temp_vint )
+        call grads_write( icount, 'vdfhr_zm_vint', ginfo_vint, temp_vint )
+
         call integral_p( jm, ko, pout, p_pds, qgz_zm, temp_vint )
         call grads_write( icount, 'qgz_zm_vint', ginfo_vint, temp_vint )
 
+        call integral_p( jm, ko, pout, p_pds, ttswr_gz_zm, temp_vint )
+        call grads_write( icount, 'ttswr_gz_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, ttlwr_gz_zm, temp_vint )
+        call grads_write( icount, 'ttlwr_gz_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, lrghr_gz_zm, temp_vint )
+        call grads_write( icount, 'lrghr_gz_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, cnvhr_gz_zm, temp_vint )
+        call grads_write( icount, 'cnvhr_gz_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, vdfhr_gz_zm, temp_vint )
+        call grads_write( icount, 'vdfhr_gz_zm_vint', ginfo_vint, temp_vint )
+
         call integral_p( jm, ko, pout, p_pds, qe_zm, temp_vint )
         call grads_write( icount, 'qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, ttswr_qe_zm, temp_vint )
+        call grads_write( icount, 'ttswr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, ttlwr_qe_zm, temp_vint )
+        call grads_write( icount, 'ttlwr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, lrghr_qe_zm, temp_vint )
+        call grads_write( icount, 'lrghr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, cnvhr_qe_zm, temp_vint )
+        call grads_write( icount, 'cnvhr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call integral_p( jm, ko, pout, p_pds, vdfhr_qe_zm, temp_vint )
+        call grads_write( icount, 'vdfhr_qe_zm_vint', ginfo_vint, temp_vint )
 
         call integral_p( jm, ko, pout, p_pds, dkzdt_vkz, temp_vint )
         call grads_write( icount, 'dkzdt_vkz_vint', ginfo_vint, temp_vint )
@@ -982,6 +1256,11 @@ program mim
      if( OUTPUT_GMEAN_FILENAME /= '' ) then
         call grads_write( icount, 'az_gmean', ginfo_gmean, az_gmean )
         call grads_write( icount, 'qz_gmean', ginfo_gmean, qz_gmean )
+        call grads_write( icount, 'ttswr_qz_gmean', ginfo_gmean, ttswr_qz_gmean )
+        call grads_write( icount, 'ttlwr_qz_gmean', ginfo_gmean, ttlwr_qz_gmean )
+        call grads_write( icount, 'lrghr_qz_gmean', ginfo_gmean, lrghr_qz_gmean )
+        call grads_write( icount, 'cnvhr_qz_gmean', ginfo_gmean, cnvhr_qz_gmean )
+        call grads_write( icount, 'vdfhr_qz_gmean', ginfo_gmean, vdfhr_qz_gmean )
      end if
 
      ! wavenumber decomposition

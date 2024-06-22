@@ -5,7 +5,8 @@ OBJS_MODULE_SRC = isnan.o \
 		  mim_var.o \
 		  grads.o \
 		  biseki.o \
-		  biseki_y.o
+		  biseki_y.o \
+          diabatic_all.o
 
 OBJS_SRC = mim.o \
 	   getpt.o \

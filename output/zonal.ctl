@@ -9,9 +9,9 @@ xdef 1 linear 1 1
 ydef 145 linear -90.0 1.25
 zdef 45 levels
 1000, 975, 950, 925, 900, 875, 850, 825, 800, 775, 750, 700, 650, 600, 550, 500, 450, 400, 350, 300, 250, 225, 200, 175, 150, 125, 100, 85, 70, 60, 50, 40, 30, 20, 10, 7, 5, 3, 2, 1, 0.7, 0.3, 0.1, 0.03, 0.01
-tdef 77432 linear 00Z01JAN1970 6hr
+tdef 1464 linear 00Z01JAN1970 6hr
 
-vars 57
+vars 72
 u           45 99  Zonal Wind [m/s]
 v           45 99  Meridional Wind [m/s]
 pt          45 99  Potential Temperature [K]
@@ -50,8 +50,23 @@ c_kz_ke_tan 45 99  C(Kz->Ke) by tan [J/(kg s)] or [W/kg]
 c_kz_ke     45 99  C(Kz->Ke) [J/(kg s)] or [W/kg]
 c_kz_w      45 99  C(Kz->W) = C(Kz->Ke) + C(Kz->Ae) [J/(kg s)] or [W/kg]
 q           45 99  Diabatic Heating (q/cp -> dT/dt) [J/(kg s)]
+ttswr       45 99  Diabatic Heating (q/cp -> dT/dt) [J/(kg s)] by short wave radiation
+ttlwr       45 99  Diabatic Heating (q/cp -> dT/dt) [J/(kg s)] by long wave radiation
+lrghr       45 99  Diabatic Heating (q/cp -> dT/dt) [J/(kg s)] by large scale condensation
+cnvhr       45 99  Diabatic Heating (q/cp -> dT/dt) [J/(kg s)] by convection
+vdfhr       45 99  Diabatic Heating (q/cp -> dT/dt) [J/(kg s)] by vertical diffusion
 qgz         45 99  Zonal Diabatic Heating (+Ground State) [J/(kg s)]
+ttswr_gz    45 99  Zonal Diabatic Heating (+Ground State) [J/(kg s)] by short wave radiation
+ttlwr_gz    45 99  Zonal Diabatic Heating (+Ground State) [J/(kg s)] by long wave radiation
+lrghr_gz    45 99  Zonal Diabatic Heating (+Ground State) [J/(kg s)] by large scale condensation
+cnvhr_gz    45 99  Zonal Diabatic Heating (+Ground State) [J/(kg s)] by convection
+vdfhr_gz    45 99  Zonal Diabatic Heating (+Ground State) [J/(kg s)] by vertical diffusion
 qe          45 99  Eddy Available Diabatic Heating [J/(kg s)]
+ttswr_qe    45 99  Eddy Available Diabatic Heating [J/(kg s)] by short wave radiation
+ttlwr_qe    45 99  Eddy Available Diabatic Heating [J/(kg s)] by long wave radiation
+lrghr_qe    45 99  Eddy Available Diabatic Heating [J/(kg s)] by large scale condensation
+cnvhr_qe    45 99  Eddy Available Diabatic Heating [J/(kg s)] by convection
+vdfhr_qe    45 99  Eddy Available Diabatic Heating [J/(kg s)] by vertical diffusion
 kz          45 99  Zonal Kinetic Energy [m^2/s^2] or [J/kg]
 ke          45 99  Eddy Kinetic Energy [m^2/s^2] or [J/kg]
 pz          45 99  Potential Energy (including groud state) [m^2/s^2] or [J/kg]

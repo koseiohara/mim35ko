@@ -15,7 +15,7 @@ INSTALL=~/bin
 
 ##### Intel ifort (for 10.0) #####
 FC=ifort
-OPTION=-warn all -O0 -assume byterecl -convert little_endian
+OPTION=-warn all -O1 -assume byterecl -convert little_endian
 #OPTION=-assume byterecl -O3 -fast -warn all -traceback -heap-arrays    # optimized
 #OPTION=-assume byterecl -O2 -warn all -traceback -heap-arrays    # optimized
 #OPTION=-assume byterecl -O0 -warn all -traceback -g -heap-arrays#    # no optimized
