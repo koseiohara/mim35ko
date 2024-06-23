@@ -24,9 +24,9 @@ module az_latprof
       implicit none
       real(4),intent(in)  :: p_pds(jm)
       real(4),intent(in)  :: p_pdds(1)
-      real(4),intent(in)  :: pd_pdd(jm, ko)
-      real(4),intent(in)  :: pt_pdds(1)
-      real(4),intent(in)  :: pt_ym(ko)
+      real(4),intent(in)  :: pd_pdd(jm, ko)         ! p+ at 
+      real(4),intent(in)  :: pt_pdds(1)             ! Potential Temperature at the surface p++ level
+      real(4),intent(in)  :: pt_ym(ko)              ! Potential Temperature at each p++ level
       real(4),intent(out) :: az_zm_vint(jm)
 
       real(4) :: pd_ym(ko)
