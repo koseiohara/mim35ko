@@ -264,8 +264,8 @@ program mim
   end if
 
 
-  open(newunit=warn_unit, file="../output/warnlog.txt", action="write")
-  open(newunit=nan_detector, file='../output/nans.txt', action='write')
+  !open(newunit=warn_unit, file="../output/warnlog.txt", action="write")
+  !open(newunit=nan_detector, file='../output/nans.txt', action='write')
 
   Q_exist      =  (INPUT_Q_FILENAME     /= '')
   Qcomps_exist = ((INPUT_TTSWR_FILENAME /= '') .AND. &
@@ -1282,8 +1282,8 @@ program mim
 
   end do
 
-  close(warn_unit)
-  close(nan_detector)
+  !close(warn_unit)
+  !close(nan_detector)
 
   ! deallocate memory
   call mim_var_end()
