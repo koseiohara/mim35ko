@@ -17,7 +17,7 @@ FIN=2023
 RESULT="../output/${DATA}/result_${INI}_${FIN}_${NOW}.txt"
 
 #NAMELIST="../nml/input_JRA55_2000_2000.nml"
-NAMELIST="../nml/input_${DATA}_1975_2023.nml"
+NAMELIST="../nml/input_${DATA}_${INI}_${FIN}.nml"
 
 ./MIM < ${NAMELIST} >& ${RESULT}
 
