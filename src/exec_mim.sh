@@ -15,7 +15,8 @@ INI=2000
 FIN=2000
 RESULT="../output/result_${INI}_${FIN}_${NOW}.txt"
 
-NAMELIST="../nml/input_JRA55_2000_2000.nml"
+#NAMELIST="../nml/input_JRA55_2000_2000.nml"
+NAMELIST="../nml/input_JRA3Q_2000_2000.nml"
 
 ./MIM < ${NAMELIST} >& ${RESULT}
 
