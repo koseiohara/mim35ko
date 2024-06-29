@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q tqueue
-#PBS -N MIM_ALL3Q
+#PBS -N MIM_ALL_FAST
 #PBS -j oe
 #PBS -l nodes=1:ppn=1
 
@@ -13,8 +13,12 @@ ulimit -s unlimited
 NOW=$(date "+%Y%m%d_%H%M%S")
 INI=2000
 FIN=2000
-RESULT_FILE="../output/result_${INI}_${FIN}_${NOW}.txt"
-./MIM_ALL3Q >& ${RESULT_FILE}
+RESULT="../output/result_${INI}_${FIN}_${NOW}.txt"
+
+#NAMELIST="../nml/input_JRA55_2000_2000.nml"
+NAMELIST="../nml/input_JRA3Q_2000_2000.nml"
+
+./MIM < ${NAMELIST} >& ${RESULT}
 
 END=$(date "+%s")
 
@@ -24,6 +28,8 @@ DIFF_MIN=$(expr ${DIFF_SEC} / 60)
 DIFF_SEC=$(expr ${DIFF_SEC} - ${DIFF_MIN} \* 60)
 DIFF_HR=$(expr ${DIFF_MIN} / 60)
 DIFF_MIN=$(expr ${DIFF_MIN} - ${DIFF_HR} \* 60)
-echo " " >> ../test.txt
-echo "ELAPS : ${DIFF_HR}hr ${DIFF_MIN}min ${DIFF_SEC}sec" >> ${RESULT_FILE}
+echo " " >> ${RESULT}
+echo "ELAPS : ${DIFF_HR}hr ${DIFF_MIN}min ${DIFF_SEC}sec" >> ${RESULT}
+
+cat ${NAMELIST} >> ${RESULT}
 
