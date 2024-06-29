@@ -11,12 +11,12 @@ cd /mnt/jet11/kosei/mim/mim35ko/src/
 ulimit -s unlimited
 
 NOW=$(date "+%Y%m%d_%H%M%S")
-INI=2000
-FIN=2000
+INI=1975
+FIN=2023
 RESULT="../output/result_${INI}_${FIN}_${NOW}.txt"
 
 #NAMELIST="../nml/input_JRA55_2000_2000.nml"
-NAMELIST="../nml/input_JRA3Q_2000_2000.nml"
+NAMELIST="../nml/input_JRA3Q_1975_2023.nml"
 
 ./MIM < ${NAMELIST} >& ${RESULT}
 
