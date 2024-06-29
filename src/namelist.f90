@@ -162,6 +162,7 @@ contains
     character(128), parameter :: fname_output_zdef='../nml/output_zdef.nml'
 
     integer :: is
+    integer, parameter :: nml_input = 5
 
     !***** declare *****!
     namelist / INPUT  / INPUT_TYPE, &
@@ -305,98 +306,109 @@ contains
     OUTPUT_WAVE_FILENAME   = ''
 
 
-    open(unit_input, file=fname_input, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_input)
-        error stop
-    endif
+    !open(unit_input, file=fname_input, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_input)
+    !    error stop
+    !endif
 
-    open(unit_unit, file=fname_unit, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_unit)
-        error stop
-    endif
+    !open(unit_unit, file=fname_unit, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_unit)
+    !    error stop
+    !endif
 
-    open(unit_undef, file=fname_undef, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_undef)
-        error stop
-    endif
+    !open(unit_undef, file=fname_undef, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_undef)
+    !    error stop
+    !endif
 
-    open(unit_endian, file=fname_endian, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_endian)
-        error stop
-    endif
+    !open(unit_endian, file=fname_endian, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_endian)
+    !    error stop
+    !endif
 
-    open(unit_xdef, file=fname_xdef, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_xdef)
-        error stop
-    endif
+    !open(unit_xdef, file=fname_xdef, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_xdef)
+    !    error stop
+    !endif
 
-    open(unit_ydef, file=fname_ydef, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_ydef)
-        error stop
-    endif
+    !open(unit_ydef, file=fname_ydef, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_ydef)
+    !    error stop
+    !endif
 
-    open(unit_zdef, file=fname_zdef, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_zdef)
-        error stop
-    endif
+    !open(unit_zdef, file=fname_zdef, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_zdef)
+    !    error stop
+    !endif
 
-    open(unit_tdef, file=fname_tdef, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_tdef)
-        error stop
-    endif
+    !open(unit_tdef, file=fname_tdef, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_tdef)
+    !    error stop
+    !endif
 
-    open(unit_wave, file=fname_wave, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_wave)
-        error stop
-    endif
+    !open(unit_wave, file=fname_wave, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_wave)
+    !    error stop
+    !endif
 
-    open(unit_output, file=fname_output, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_output)
-        error stop
-    endif
+    !open(unit_output, file=fname_output, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_output)
+    !    error stop
+    !endif
 
-    open(unit_output_zdef, file=fname_output_zdef, action='read', iostat=is)
-    if (is /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname_output_zdef)
-        error stop
-    endif
+    !open(unit_output_zdef, file=fname_output_zdef, action='read', iostat=is)
+    !if (is /= 0) then
+    !    write(*,*) 'Failed to open ' // trim(fname_output_zdef)
+    !    error stop
+    !endif
 
 
     !***** read *****!
-    read(unit_input, nml=INPUT)
-    read(unit_unit, nml=INPUT_UNIT)
-    read(unit_undef, nml=INPUT_UNDEF)
-    read(unit_endian, nml=INPUT_ENDIAN)
-    read(unit_xdef, nml=INPUT_XDEF)
-    read(unit_ydef, nml=INPUT_YDEF)
-    read(unit_zdef, nml=INPUT_ZDEF)
-    read(unit_tdef, nml=INPUT_TDEF)
-    read(unit_wave, nml=WAVE)
-    read(unit_output, nml=OUTPUT)
-    read(unit_output_zdef, nml=OUTPUT_ZDEF)
+    !read(unit_input, nml=INPUT)
+    !read(unit_unit, nml=INPUT_UNIT)
+    !read(unit_undef, nml=INPUT_UNDEF)
+    !read(unit_endian, nml=INPUT_ENDIAN)
+    !read(unit_xdef, nml=INPUT_XDEF)
+    !read(unit_ydef, nml=INPUT_YDEF)
+    !read(unit_zdef, nml=INPUT_ZDEF)
+    !read(unit_tdef, nml=INPUT_TDEF)
+    !read(unit_wave, nml=WAVE)
+    !read(unit_output, nml=OUTPUT)
+    !read(unit_output_zdef, nml=OUTPUT_ZDEF)
 
+    read(nml_input, nml=INPUT)
+    read(nml_input, nml=INPUT_ENDIAN)
+    read(nml_input, nml=INPUT_UNDEF)
+    read(nml_input, nml=INPUT_UNIT)
+    read(nml_input, nml=INPUT_TDEF)
+    read(nml_input, nml=INPUT_XDEF)
+    read(nml_input, nml=INPUT_YDEF)
+    read(nml_input, nml=INPUT_ZDEF)
+    read(nml_input, nml=OUTPUT)
+    read(nml_input, nml=OUTPUT_ZDEF)
+    read(nml_input, nml=WAVE)
 
-    close(unit_input)
-    close(unit_unit)
-    close(unit_undef)
-    close(unit_endian)
-    close(unit_xdef)
-    close(unit_ydef)
-    close(unit_zdef)
-    close(unit_tdef)
-    close(unit_wave)
-    close(unit_output)
-    close(unit_output_zdef)
+    !close(unit_input)
+    !close(unit_unit)
+    !close(unit_undef)
+    !close(unit_endian)
+    !close(unit_xdef)
+    !close(unit_ydef)
+    !close(unit_zdef)
+    !close(unit_tdef)
+    !close(unit_wave)
+    !close(unit_output)
+    !close(unit_output_zdef)
 
 
     !***** adjust *****!

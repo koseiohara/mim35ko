@@ -182,21 +182,21 @@ program mim
   end if
 
   if( INPUT_LRGHR_FILENAME /= '' ) then
-     call grads_open( 72, INPUT_LRGHR_FILENAME, im, jm, km, &
+     call grads_open( 73, INPUT_LRGHR_FILENAME, im, jm, km, &
           &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
           &           INPUT_ENDIAN_LRGHR_INT, &
           &           ginfo_lrghr )
   end if
 
   if( INPUT_CNVHR_FILENAME /= '' ) then
-     call grads_open( 73, INPUT_CNVHR_FILENAME, im, jm, km, &
+     call grads_open( 74, INPUT_CNVHR_FILENAME, im, jm, km, &
           &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
           &           INPUT_ENDIAN_CNVHR_INT, &
           &           ginfo_cnvhr )
   end if
 
   if( INPUT_VDFHR_FILENAME /= '' ) then
-     call grads_open( 74, INPUT_VDFHR_FILENAME, im, jm, km, &
+     call grads_open( 75, INPUT_VDFHR_FILENAME, im, jm, km, &
           &           0, 1-INPUT_YDEF_YREV_DEFAULT, 1-INPUT_ZDEF_ZREV, &
           &           INPUT_ENDIAN_VDFHR_INT, &
           &           ginfo_vdfhr )
@@ -233,10 +233,10 @@ program mim
 
 
   ! write iteration error on log_file
-  open(65, file=OUTPUT_ERROR_FILENAME)
-  write(65,*) 'OUTPUT FILE', trim(OUTPUT_ZONAL_FILENAME)
-  write(65,*) "warning(getpt):"
-  write(65,*) "iteration was finished not approriately below:"
+  open(1000, file=OUTPUT_ERROR_FILENAME)
+  write(1000,*) 'OUTPUT FILE', trim(OUTPUT_ZONAL_FILENAME)
+  write(1000,*) "warning(getpt):"
+  write(1000,*) "iteration was finished not approriately below:"
 
 
   !***** load topography ( alt [m] ) *****!
