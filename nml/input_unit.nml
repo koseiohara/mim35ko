@@ -1,6 +1,0 @@
-&INPUT_UNIT
-	INPUT_UNIT_Z    = 'm'
-	INPUT_UNIT_PS   = 'Pa'
-	INPUT_UNIT_TOPO = 'm^2/s^2'
-&END
-
