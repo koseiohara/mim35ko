@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q tqueue
-#PBS -N MIM_ALL_FAST
+#PBS -N MIM_FAST_552000
 #PBS -j oe
 #PBS -l nodes=1:ppn=1
 
@@ -17,7 +17,7 @@ FIN=2000
 RESULT="../output/${DATA}/result_${INI}_${FIN}_${NOW}.txt"
 
 #NAMELIST="../nml/input_JRA55_2000_2000.nml"
-NAMELIST="../nml/input_${DATA}_${INI}_${FIN}.nml"
+NAMELIST="../nml/input_${DATA}_${INI}_${FIN}_fast.nml"
 
 ./MIM < ${NAMELIST} >& ${RESULT}
 
