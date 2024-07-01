@@ -784,9 +784,6 @@ program mim
           &                pt_pdds, pt_ym, &
           &                az_gmean )
 
-     call az_latprof_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
-          &               az_zm_vint )
-
 
      !***** correlation (2) : Ke and something *****!
      v_ke_zm(:,:) = 0.5 * ( u_u_v_zm(:,:) - 2 * u_v_zm(:,:) * u_zm(:,:) &
