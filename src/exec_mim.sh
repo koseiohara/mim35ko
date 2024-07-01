@@ -12,12 +12,14 @@ ulimit -s unlimited
 
 NOW=$(date "+%Y%m%d_%H%M%S")
 DATA="JRA3Q"
-INI=1975
-FIN=2023
-RESULT="../output/${DATA}/result_${INI}_${FIN}_${NOW}.txt"
+INI=2000
+FIN=2000
+#RESULT="../output/${DATA}/result_${INI}_${FIN}_${NOW}.txt"
+RESULT="../result_${INI}_${FIN}_${NOW}.txt"
 
 #NAMELIST="../nml/input_JRA55_2000_2000.nml"
-NAMELIST="../nml/input_${DATA}_1975_2023.nml"
+#NAMELIST="../nml/input_${DATA}_1975_2023.nml"
+NAMELIST="../nml/input_${DATA}_test.nml"
 
 ./MIM < ${NAMELIST} >& ${RESULT}
 

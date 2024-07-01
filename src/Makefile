@@ -1,4 +1,4 @@
-PROGRAM=MIM_ALL3Q
+PROGRAM=MIM
 
 #VERSION=dev
 VERSION=0.33r1#   ### rewrite lagmain.f90
@@ -15,7 +15,7 @@ INSTALL=~/bin
 
 ##### Intel ifort (for 10.0) #####
 FC=ifort
-OPTION=-warn all -O1 -assume byterecl -convert little_endian
+OPTION=-warn all -O1 -assume byterecl -convert little_endian -traceback
 #OPTION=-assume byterecl -O3 -fast -warn all -traceback -heap-arrays    # optimized
 #OPTION=-assume byterecl -O2 -warn all -traceback -heap-arrays    # optimized
 #OPTION=-assume byterecl -O0 -warn all -traceback -g -heap-arrays#    # no optimized
