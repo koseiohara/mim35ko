@@ -1,7 +1,11 @@
 #!/bin/bash
 
 #PBS -q tqueue
+<<<<<<< HEAD
 #PBS -N MIM_FAST_552000
+=======
+#PBS -N MIM_ALL_FAST
+>>>>>>> kosei/feature/Az-latitudinal
 #PBS -j oe
 #PBS -l nodes=1:ppn=1
 
@@ -11,6 +15,7 @@ cd /mnt/jet11/kosei/mim/mim35ko/src/
 ulimit -s unlimited
 
 NOW=$(date "+%Y%m%d_%H%M%S")
+<<<<<<< HEAD
 DATA="JRA55"
 INI=2000
 FIN=2000
@@ -18,6 +23,17 @@ RESULT="../output/${DATA}/result_${INI}_${FIN}_${NOW}.txt"
 
 #NAMELIST="../nml/input_JRA55_2000_2000.nml"
 NAMELIST="../nml/input_${DATA}_${INI}_${FIN}_fast.nml"
+=======
+DATA="JRA3Q"
+INI=2000
+FIN=2000
+#RESULT="../output/${DATA}/result_${INI}_${FIN}_${NOW}.txt"
+RESULT="../result_${INI}_${FIN}_${NOW}.txt"
+
+#NAMELIST="../nml/input_JRA55_2000_2000.nml"
+#NAMELIST="../nml/input_${DATA}_1975_2023.nml"
+NAMELIST="../nml/input_${DATA}_test.nml"
+>>>>>>> kosei/feature/Az-latitudinal
 
 ./MIM < ${NAMELIST} >& ${RESULT}
 

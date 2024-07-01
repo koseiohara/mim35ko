@@ -26,6 +26,7 @@ program mim
        &               biseki_y_sekibun_y, biseki_y_bibun_y
 
   use diabatic_all, only : diabaticHeating
+  use az_latprof  , only : az_latprof_vint
   implicit none
 
   ! temporal variables
@@ -776,7 +777,11 @@ program mim
           &               ae_zm_vint )
 
      ! az_zm_vint : vertically integrated zonal available potential energy
-     call energy_az_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
+     !call energy_az_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
+     !     &               az_zm_vint )
+
+     ! Computed with Taylor Series ... available to see latitudinal distribution (Added by Kosei Ohara)
+     call az_latprof_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
           &               az_zm_vint )
 
      ! az_gmean   : global mean zonal available potential energy
@@ -784,6 +789,9 @@ program mim
      call energy_az_gmean( p_pds, p_pdds, pd_pdd, pd_ym, &
           &                pt_pdds, pt_ym, &
           &                az_gmean )
+
+     call az_latprof_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
+          &               az_zm_vint )
 
 
      !***** correlation (2) : Ke and something *****!
