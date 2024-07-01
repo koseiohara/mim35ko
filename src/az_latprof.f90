@@ -8,7 +8,7 @@ module az_latprof
     implicit none
 
     private
-    public :: az_latprof_vint, energy_az_highPrecision
+    public :: az_latprof_vint
 
     contains
 
@@ -36,18 +36,24 @@ module az_latprof
       real(4) :: const
       real(4) :: az_modify(jm)
 
-      write(*,*) 'Marker1'
-
       ! pd_ym : global mean p+ at the p++ levels
       !         pd_ym must be almost equal to standard p++ levels 
       !         except under the ground.
       call integral_meridional( 1, jm, ko, alat, pd_pdd, &
            &                    pd_ym )
-      
+     
+      !write(*,*) 'pd_ym'
+      !write(*,*) pd_ym
       ! get integrand
-      call energy_az_highPrecision(pd_ym(1:ko)   , &  !! IN
-                                 & integ(1:jm,1:ko))  !! OUT
+      !call energy_az_decompose_tight(pd_ym(1:ko)   , &  !! IN
+      !                             & integ(1:jm,1:ko))  !! OUT
+      call energy_az_decompose_loose(pd_ym(1:ko)   , &  !! IN
+                                   & integ(1:jm,1:ko))  !! OUT
+      !call energy_az_simple(pd_ym(1:ko)   , &  !! IN
+      !                    & integ(1:jm,1:ko))  !! OUT
 
+      !write(*,*) 'integ'
+      !write(*,*) integ
       ! integrate with pt
       call integral_pt_ym( jm, ko, pout, p_pdds, pt_ym, pt_pdds, integ, &
            &               az_zm_vint )
@@ -58,6 +64,8 @@ module az_latprof
            &       * ( p_pds(:)**(rkappa+1) - p_pdds(1)**(rkappa+1) )
 
       az_zm_vint(:) = az_zm_vint(:) + az_modify(:)
+
+      !write(*,*) az_zm_vint(:)
 
     end subroutine az_latprof_vint
 
@@ -89,34 +97,70 @@ module az_latprof
     end subroutine energy_az_simple
 
 
-    subroutine energy_az_highPrecision(pd_ym, integrand)
+    subroutine energy_az_decompose_tight(pd_ym, integrand)
         real(4), intent(in)  :: pd_ym(ko)
         real(4), intent(out) :: integrand(jm,ko)
 
         real(4) :: ratio(jm)
 
-        integer, parameter :: coeff = cp / (100000._4**rkappa * (1._4 + rkappa) * grav)
-        integer, parameter :: C2 = (rkappa+1)*rkappa/2._4
-        integer, parameter :: C3 = (rkappa+1)*rkappa*(rkappa-1)/6._4
-        integer, parameter :: C4 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)/24._4
-        integer, parameter :: C5 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)*(rkappa-3)/120._4
+        real(4), parameter :: coeff = cp / (1.0e5**rkappa * (1._4 + rkappa) * grav)
+        real(4), parameter :: C2 = (rkappa+1)*rkappa/2._4
+        real(4), parameter :: C3 = (rkappa+1)*rkappa*(rkappa-1)/6._4
+        real(4), parameter :: C4 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)/24._4
+        real(4), parameter :: C5 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)*(rkappa-3)/120._4
+        real(4), parameter :: C6 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)*(rkappa-3)*(rkappa-4)/720._4
         integer :: k
 
         do k = 1, ko
 
             ratio(1:jm) = pd_pdd(1:jm,k) / pd_ym(k)
 
-            integrand(1:jm,k) = C5 * ratio(1:jm)**5
-            integrand(1:jm,k) = integrand(1:jm,k) + ( C4 - 5*C5                ) * ratio(1:jm)**4
-            integrand(1:jm,k) = integrand(1:jm,k) + ( C3 - 4*C4 + 10*C5        ) * ratio(1:jm)**3
-            integrand(1:jm,k) = integrand(1:jm,k) + ( C2 - 3*C3 +  6*C4 - 10*C5) * ratio(1:jm)**2
-            integrand(1:jm,k) = integrand(1:jm,k) + (-C2 + 2*C3 -  3*C4 +  4*C5) * ratio(1:jm)
+            integrand(1:jm,k) = C6 * ratio(1:jm)**6
+            integrand(1:jm,k) = integrand(1:jm,k) + (                                C5 -  6._4*C6) * ratio(1:jm)**5
+            integrand(1:jm,k) = integrand(1:jm,k) + (                     C4 -  5._4*C5 + 15._4*C6) * ratio(1:jm)**4
+            integrand(1:jm,k) = integrand(1:jm,k) + (           C3 - 4._4*C4 + 10._4*C5 - 20._4*C6) * ratio(1:jm)**3
+            integrand(1:jm,k) = integrand(1:jm,k) + ( C2 - 3._4*C3 + 6._4*C4 - 10._4*C5 + 15._4*C6) * ratio(1:jm)**2
+            integrand(1:jm,k) = integrand(1:jm,k) + (-C2 + 2._4*C3 - 3._4*C4 +  4._4*C5 -  5._4*C6) * ratio(1:jm)
+            !integrand(1:jm,k) = integrand(1:jm,k) + ( C2 -      C3 +      C4 -       C5 +       C6)
             
             integrand(1:jm,k) = integrand(1:jm,k) * coeff * (pd_ym(k)*100._4)**(1+rkappa)
 
         enddo
 
-    end subroutine energy_az_highPrecision
+    end subroutine energy_az_decompose_tight
+
+
+    subroutine energy_az_decompose_loose(pd_ym, integrand)
+        real(4), intent(in)  :: pd_ym(ko)
+        real(4), intent(out) :: integrand(jm,ko)
+
+        real(4) :: ratio(jm)
+
+        real(4), parameter :: coeff = cp / (1.0e5**rkappa * (1._4 + rkappa) * grav)
+        real(4), parameter :: C2 = (rkappa+1)*rkappa/2._4
+        real(4), parameter :: C3 = (rkappa+1)*rkappa*(rkappa-1)/6._4
+        real(4), parameter :: C4 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)/24._4
+        real(4), parameter :: C5 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)*(rkappa-3)/120._4
+        real(4), parameter :: C6 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)*(rkappa-3)*(rkappa-4)/720._4
+        integer :: k
+
+        do k = 1, ko
+
+            ratio(1:jm) = pd_pdd(1:jm,k) / pd_ym(k)
+
+            integrand(1:jm,k) = C6 * ratio(1:jm)**6
+            integrand(1:jm,k) = integrand(1:jm,k) + (                                      C5 -  6._4*C6) * ratio(1:jm)**5
+            integrand(1:jm,k) = integrand(1:jm,k) + (                           C4 -  5._4*C5 + 15._4*C6) * ratio(1:jm)**4
+            integrand(1:jm,k) = integrand(1:jm,k) + (                 C3 - 4._4*C4 + 10._4*C5 - 20._4*C6) * ratio(1:jm)**3
+            integrand(1:jm,k) = integrand(1:jm,k) + (       C2 - 3._4*C3 + 6._4*C4 - 10._4*C5 + 15._4*C6) * ratio(1:jm)**2
+            integrand(1:jm,k) = integrand(1:jm,k) + (- 2._4*C2 + 3._4*C3 - 4._4*C4 +  5._4*C5 -  6._4*C6) * ratio(1:jm)
+            integrand(1:jm,k) = integrand(1:jm,k) + (       C2 -      C3 +      C4 -       C5 +       C6)
+            
+            integrand(1:jm,k) = integrand(1:jm,k) * coeff * (pd_ym(k)*100._4)**(1+rkappa)
+
+        enddo
+
+    end subroutine energy_az_decompose_loose
 
 
 end module az_latprof
