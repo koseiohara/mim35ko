@@ -26,6 +26,7 @@ program mim
        &               biseki_y_sekibun_y, biseki_y_bibun_y
 
   use diabatic_all, only : diabaticHeating
+  use az_latprof  , only : az_latprof_vint
   implicit none
 
   ! temporal variables
@@ -776,7 +777,11 @@ program mim
           &               ae_zm_vint )
 
      ! az_zm_vint : vertically integrated zonal available potential energy
-     call energy_az_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
+     !call energy_az_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
+     !     &               az_zm_vint )
+
+     ! Computed with Taylor Series ... available to see latitudinal distribution (Added by Kosei Ohara)
+     call az_latprof_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
           &               az_zm_vint )
 
      ! az_gmean   : global mean zonal available potential energy
@@ -784,6 +789,9 @@ program mim
      call energy_az_gmean( p_pds, p_pdds, pd_pdd, pd_ym, &
           &                pt_pdds, pt_ym, &
           &                az_gmean )
+
+     call az_latprof_vint( p_pds, p_pdds, pd_pdd, pt_pdds, pt_ym, &
+          &               az_zm_vint )
 
 
      !***** correlation (2) : Ke and something *****!
@@ -1085,22 +1093,22 @@ program mim
         call grads_write( icount, 'ke_zm'      , ginfo_zonal, ke_zm )
         call grads_write( icount, 'pz_zm'      , ginfo_zonal, pz_zm )
         call grads_write( icount, 'ae_total_zm', ginfo_zonal, ae_total_zm )
-        call grads_write( icount, 'dkzdt_vkz'  , ginfo_zonal, dkzdt_vkz )
+        !call grads_write( icount, 'dkzdt_vkz'  , ginfo_zonal, dkzdt_vkz )
 
-        call grads_write( icount, 'dkzdt_wkz'  , ginfo_zonal, dkzdt_wkz )
-        call grads_write( icount, 'dkedt_uy'   , ginfo_zonal, dkedt_uy )
-        call grads_write( icount, 'dkedt_vy'   , ginfo_zonal, dkedt_vy )
-        call grads_write( icount, 'dkedt_uz'   , ginfo_zonal, dkedt_uz )
-        call grads_write( icount, 'dkedt_vz'   , ginfo_zonal, dkedt_vz )
+        !call grads_write( icount, 'dkzdt_wkz'  , ginfo_zonal, dkzdt_wkz )
+        !call grads_write( icount, 'dkedt_uy'   , ginfo_zonal, dkedt_uy )
+        !call grads_write( icount, 'dkedt_vy'   , ginfo_zonal, dkedt_vy )
+        !call grads_write( icount, 'dkedt_uz'   , ginfo_zonal, dkedt_uz )
+        !call grads_write( icount, 'dkedt_vz'   , ginfo_zonal, dkedt_vz )
 
-        call grads_write( icount, 'dkedt_vke'  , ginfo_zonal, dkedt_vke )
-        call grads_write( icount, 'dkedt_wke'  , ginfo_zonal, dkedt_wke )
-        call grads_write( icount, 'dpedt_vt'   , ginfo_zonal, dpedt_vt )  ! not used
-        call grads_write( icount, 'd_u_epz'    , ginfo_zonal, d_u_epz )   ! not checked
-        call grads_write( icount, 'divz_tzm'   , ginfo_zonal, divz_tzm )  ! not checked
+        !call grads_write( icount, 'dkedt_vke'  , ginfo_zonal, dkedt_vke )
+        !call grads_write( icount, 'dkedt_wke'  , ginfo_zonal, dkedt_wke )
+        !call grads_write( icount, 'dpedt_vt'   , ginfo_zonal, dpedt_vt )  ! not used
+        !call grads_write( icount, 'd_u_epz'    , ginfo_zonal, d_u_epz )   ! not checked
+        !call grads_write( icount, 'divz_tzm'   , ginfo_zonal, divz_tzm )  ! not checked
 
-        call grads_write( icount, 'divphi_t'   , ginfo_zonal, divphi_t )  ! not checked
-        call grads_write( icount, 'dwdt'       , ginfo_zonal, dwdt )      ! not checked
+        !call grads_write( icount, 'divphi_t'   , ginfo_zonal, divphi_t )  ! not checked
+        !call grads_write( icount, 'dwdt'       , ginfo_zonal, dwdt )      ! not checked
      end if
 
      ! lat
@@ -1211,44 +1219,44 @@ program mim
         call integral_p( jm, ko, pout, p_pds, vdfhr_qe_zm, temp_vint )
         call grads_write( icount, 'vdfhr_qe_zm_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dkzdt_vkz, temp_vint )
-        call grads_write( icount, 'dkzdt_vkz_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dkzdt_vkz, temp_vint )
+        !call grads_write( icount, 'dkzdt_vkz_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dkzdt_wkz, temp_vint )
-        call grads_write( icount, 'dkzdt_wkz_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dkzdt_wkz, temp_vint )
+        !call grads_write( icount, 'dkzdt_wkz_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dkedt_uy, temp_vint )
-        call grads_write( icount, 'dkedt_uy_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dkedt_uy, temp_vint )
+        !call grads_write( icount, 'dkedt_uy_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dkedt_vy, temp_vint )
-        call grads_write( icount, 'dkedt_vy_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dkedt_vy, temp_vint )
+        !call grads_write( icount, 'dkedt_vy_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dkedt_uz, temp_vint )
-        call grads_write( icount, 'dkedt_uz_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dkedt_uz, temp_vint )
+        !call grads_write( icount, 'dkedt_uz_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dkedt_vz, temp_vint )
-        call grads_write( icount, 'dkedt_vz_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dkedt_vz, temp_vint )
+        !call grads_write( icount, 'dkedt_vz_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dkedt_vke, temp_vint )
-        call grads_write( icount, 'dkedt_vke_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dkedt_vke, temp_vint )
+        !call grads_write( icount, 'dkedt_vke_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dkedt_wke, temp_vint )
-        call grads_write( icount, 'dkedt_wke_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dkedt_wke, temp_vint )
+        !call grads_write( icount, 'dkedt_wke_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dpedt_vt, temp_vint )
-        call grads_write( icount, 'dpedt_vt_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dpedt_vt, temp_vint )
+        !call grads_write( icount, 'dpedt_vt_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, d_u_epz, temp_vint )
-        call grads_write( icount, 'd_u_epz_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, d_u_epz, temp_vint )
+        !call grads_write( icount, 'd_u_epz_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, divz_tzm, temp_vint )
-        call grads_write( icount, 'divz_tzm_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, divz_tzm, temp_vint )
+        !call grads_write( icount, 'divz_tzm_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, divphi_t, temp_vint )
-        call grads_write( icount, 'divphi_t_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, divphi_t, temp_vint )
+        !call grads_write( icount, 'divphi_t_vint', ginfo_vint, temp_vint )
 
-        call integral_p( jm, ko, pout, p_pds, dwdt, temp_vint )
-        call grads_write( icount, 'dwdt_vint', ginfo_vint, temp_vint )
+        !call integral_p( jm, ko, pout, p_pds, dwdt, temp_vint )
+        !call grads_write( icount, 'dwdt_vint', ginfo_vint, temp_vint )
 
      end if
 

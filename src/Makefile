@@ -15,7 +15,10 @@ INSTALL=~/bin
 
 ##### Intel ifort (for 10.0) #####
 FC=ifort
+<<<<<<< HEAD
 #OPTION=-warn all -O1 -assume byterecl -convert little_endian -traceback -check all
+=======
+>>>>>>> kosei/feature/Az-latitudinal
 OPTION=-warn all -O1 -assume byterecl -convert little_endian -traceback
 #OPTION=-assume byterecl -O3 -fast -warn all -traceback -heap-arrays    # optimized
 #OPTION=-assume byterecl -O2 -warn all -traceback -heap-arrays    # optimized
