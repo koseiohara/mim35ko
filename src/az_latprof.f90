@@ -42,18 +42,12 @@ module az_latprof
       call integral_meridional( 1, jm, ko, alat, pd_pdd, &
            &                    pd_ym )
      
-      !write(*,*) 'pd_ym'
-      !write(*,*) pd_ym
       ! get integrand
       !call energy_az_decompose_tight(pd_ym(1:ko)   , &  !! IN
       !                             & integ(1:jm,1:ko))  !! OUT
       call energy_az_decompose_loose(pd_ym(1:ko)   , &  !! IN
                                    & integ(1:jm,1:ko))  !! OUT
-      !call energy_az_simple(pd_ym(1:ko)   , &  !! IN
-      !                    & integ(1:jm,1:ko))  !! OUT
 
-      !write(*,*) 'integ'
-      !write(*,*) integ
       ! integrate with pt
       call integral_pt_ym( jm, ko, pout, p_pdds, pt_ym, pt_pdds, integ, &
            &               az_zm_vint )
@@ -64,8 +58,6 @@ module az_latprof
            &       * ( p_pds(:)**(rkappa+1) - p_pdds(1)**(rkappa+1) )
 
       az_zm_vint(:) = az_zm_vint(:) + az_modify(:)
-
-      !write(*,*) az_zm_vint(:)
 
     end subroutine az_latprof_vint
 
