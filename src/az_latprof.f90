@@ -41,12 +41,16 @@ module az_latprof
       !         except under the ground.
       call integral_meridional( 1, jm, ko, alat, pd_pdd, &
            &                    pd_ym )
+
+      call energy_az_simple(pd_ym(1:ko)   , &  !! IN
+                          & integ(1:jm,1:ko))  !! OUT
      
       ! get integrand
       !call energy_az_decompose_tight(pd_ym(1:ko)   , &  !! IN
       !                             & integ(1:jm,1:ko))  !! OUT
-      call energy_az_decompose_loose(pd_ym(1:ko)   , &  !! IN
-                                   & integ(1:jm,1:ko))  !! OUT
+
+      !call energy_az_decompose_loose(pd_ym(1:ko)   , &  !! IN
+      !                             & integ(1:jm,1:ko))  !! OUT
 
       ! integrate with pt
       call integral_pt_ym( jm, ko, pout, p_pdds, pt_ym, pt_pdds, integ, &
@@ -68,22 +72,25 @@ module az_latprof
 
         real(4) :: expansion(jm)                      !! p_dagger - p_dagger_dagger
 
-        integer, parameter :: coeff = cp / (100000._4**rkappa * (1._4 + rkappa) * grav)
+        integer, parameter :: coeff = cp / (1.0e5**rkappa * (1._4 + rkappa) * grav)
+        real(4), parameter :: C2 = (rkappa+1)*rkappa/2._4
+        real(4), parameter :: C3 = (rkappa+1)*rkappa*(rkappa-1)/6._4
+        real(4), parameter :: C4 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)/24._4
+        real(4), parameter :: C5 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)*(rkappa-3)/120._4
+        real(4), parameter :: C6 = (rkappa+1)*rkappa*(rkappa-1)*(rkappa-2)*(rkappa-3)*(rkappa-4)/720._4
         integer :: k
 
         do k = 1, ko
             expansion(1:jm) = (pd_pdd(1:jm,k) - pd_ym(k)) / pd_ym(k)
-            integrand(1:jm,k)  &
-            & = coeff*(pd_ym(k)*100._4)**(1+rkappa) * (                                                              &  !! coefficient
-            &   (rkappa+1._4)*rkappa/2._4                                                                            &  !! 2st term
-            &                       *expansion(1:jm)*expansion(1:jm)                                                 &
-            & + (rkappa+1._4)*rkappa*(rkappa-1._4)/6._4                                                              &  !! 3nd term
-            &                       *expansion(1:jm)*expansion(1:jm)*expansion(1:jm)                                 &
-            & + (rkappa+1._4)*rkappa*(rkappa-1._4)*(rkappa-2._4)/24._4                                               &  !! 4rd term
-            &                       *expansion(1:jm)*expansion(1:jm)*expansion(1:jm)*expansion(1:jm)                 &
-            & + (rkappa+1._4)*rkappa+(rkappa-1._4)*(rkappa-2._4)*(rkappa-3._4)/120._4                                &  !! 5th term
-            &                       *expansion(1:jm)*expansion(1:jm)*expansion(1:jm)*expansion(1:jm)*expansion(1:jm) &
-            & )
+
+            integrand(1:jm,k) = C6*expansion(1:jm)**6
+            integrand(1:jm,k) = integrand(1:jm,k) + C5*expansion(1:jm)**5
+            integrand(1:jm,k) = integrand(1:jm,k) + C4*expansion(1:jm)**4
+            integrand(1:jm,k) = integrand(1:jm,k) + C3*expansion(1:jm)**3
+            integrand(1:jm,k) = integrand(1:jm,k) + C2*expansion(1:jm)**2
+
+            integrand(1:jm,k) = integrand(1:jm,k) * coeff * (pd_ym(k)*100._4)**(1._4+rkappa)
+
         enddo
 
     end subroutine energy_az_simple
@@ -113,7 +120,6 @@ module az_latprof
             integrand(1:jm,k) = integrand(1:jm,k) + (           C3 - 4._4*C4 + 10._4*C5 - 20._4*C6) * ratio(1:jm)**3
             integrand(1:jm,k) = integrand(1:jm,k) + ( C2 - 3._4*C3 + 6._4*C4 - 10._4*C5 + 15._4*C6) * ratio(1:jm)**2
             integrand(1:jm,k) = integrand(1:jm,k) + (-C2 + 2._4*C3 - 3._4*C4 +  4._4*C5 -  5._4*C6) * ratio(1:jm)
-            !integrand(1:jm,k) = integrand(1:jm,k) + ( C2 -      C3 +      C4 -       C5 +       C6)
             
             integrand(1:jm,k) = integrand(1:jm,k) * coeff * (pd_ym(k)*100._4)**(1+rkappa)
 

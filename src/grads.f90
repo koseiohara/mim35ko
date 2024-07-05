@@ -35,8 +35,6 @@ contains
     integer,intent(in)      :: endian
     type(grads_info),intent(out) :: ginfo
 
-    integer :: stat
-
     ginfo%ionum  = ionum
     ginfo%imax   = imax
     ginfo%jmax   = jmax
@@ -48,10 +46,6 @@ contains
     ginfo%record = 1
 
     open(ionum, file=fname, form='unformatted', access='direct', recl=imax*jmax*kmax*4) 
-    if (stat /= 0) then
-        write(*,*) 'Failed to open ' // trim(fname)
-        error stop
-    endif
 
   end subroutine grads_open
 

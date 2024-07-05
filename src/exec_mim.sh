@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q tqueue
-#PBS -N MIM_ALL_noZONAL
+#PBS -N MIM_ALL_ZONAL
 #PBS -j oe
 #PBS -l nodes=1:ppn=1
 

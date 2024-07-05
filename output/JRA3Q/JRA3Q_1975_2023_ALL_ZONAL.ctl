@@ -1,4 +1,4 @@
-dset ^JRA3Q_1975_2022_ALL_ZONAL_FEWER.grd
+dset ^JRA3Q_1975_2023_ALL_ZONAL.grd
 title MIM
 
 undef 9.999e+20
@@ -9,9 +9,9 @@ xdef 1 linear 1 1
 ydef 145 linear -90.0 1.25
 zdef 45 levels
 1000, 975, 950, 925, 900, 875, 850, 825, 800, 775, 750, 700, 650, 600, 550, 500, 450, 400, 350, 300, 250, 225, 200, 175, 150, 125, 100, 85, 70, 60, 50, 40, 30, 20, 10, 7, 5, 3, 2, 1, 0.7, 0.3, 0.1, 0.03, 0.01
-tdef 70128 linear 00Z01JAN1975 6hr
+tdef 71588 linear 00Z01JAN1975 6hr
 
-vars 59
+vars 72
 u           45 99  Zonal Wind [m/s]
 v           45 99  Meridional Wind [m/s]
 pt          45 99  Potential Temperature [K]
@@ -71,4 +71,17 @@ kz          45 99  Zonal Kinetic Energy [m^2/s^2] or [J/kg]
 ke          45 99  Eddy Kinetic Energy [m^2/s^2] or [J/kg]
 pz          45 99  Potential Energy (including groud state) [m^2/s^2] or [J/kg]
 ae_total    45 99  Eddy Available Potential Energy (including surface effect)
+dkzdt_vkz   45 99  Kz advection by v [m/s^3]
+dkzdt_wkz   45 99  Kz advection by w [m/s^3]
+dkedt_uy    45 99  Wave Energy Flux Div. d(u Fy)/dy [m/s^3]
+dkedt_vy    45 99  Wave Energy Flux Div. d(v Gy)/dy [m/s^3]
+dkedt_uz    45 99  Wave Energy Flux Div. d(u Fz^uw)/dz [m/s^3]
+dkedt_vz    45 99  Wave Energy Flux Div. d(v Gz)/dz [m/s^3]
+dkedt_vke   45 99  Ke advection by v [m/s^3]
+dkedt_wke   45 99  Ke advection by w [m/s^3]
+dpedt_vt    45 99  [m/s^3] (not used)
+duepz       45 99  div_uepz(local) (not checked)
+dzdtm       45 99  divz_tzm(local) (not checked)
+dzdt        45 99  divphi_t(local) (not checked)
+dwdt        45 99  dwdt(local)     (not checked)
 ENDVARS

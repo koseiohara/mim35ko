@@ -1,4 +1,4 @@
-dset ^JRA3Q_1975_2022_ALL_VINT.grd
+dset ^JRA3Q_1975_2023_ALL_VINT.grd
 title MIM vertical integral
 
 undef 9.999e+20
@@ -8,7 +8,7 @@ options little_endian yrev
 xdef 1 linear 1 1
 ydef 145 linear -90.0 1.25
 zdef 1 levels 1000
-tdef 70128 linear 00Z01JAN1975 6hr
+tdef 71588 linear 00Z01JAN1975 6hr
 
 VARS 49
 kz           1 99  VI (=Vertically Integrated) Zonal Kinetic Energy [J/m^2]
