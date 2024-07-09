@@ -191,6 +191,12 @@ module mim_var
   real(4),allocatable :: cnvhr_gz_zm(:,:)   ! diabatic heating to the zonal mean state by convection
   real(4),allocatable :: vdfhr_gz_zm(:,:)   ! diabatic heating to the zonal mean state by vertical diffusion
   real(4),allocatable :: qz_pdd(:)
+  real(4),allocatable :: qz_vint(:)
+  real(4),allocatable :: ttswr_qz_vint(:)
+  real(4),allocatable :: ttlwr_qz_vint(:)
+  real(4),allocatable :: lrghr_qz_vint(:)
+  real(4),allocatable :: cnvhr_qz_vint(:)
+  real(4),allocatable :: vdfhr_qz_vint(:)
   real(4)             :: qz_gmean(1)        ! Az generation by diabatic heating
   real(4)             :: ttswr_qz_gmean(1)  ! Az generation by short wave radiation
   real(4)             :: ttlwr_qz_gmean(1)  ! Az generation by long  wave radiation
@@ -387,6 +393,12 @@ contains
     allocate( cnvhr_gz_zm(jm,ko) )
     allocate( vdfhr_gz_zm(jm,ko) )
     allocate( qz_pdd(ko) )
+    allocate( qz_vint(jm) )
+    allocate( ttswr_qz_vint(jm) )
+    allocate( ttlwr_qz_vint(jm) )
+    allocate( lrghr_qz_vint(jm) )
+    allocate( cnvhr_qz_vint(jm) )
+    allocate( vdfhr_qz_vint(jm) )
     allocate( qe_zm(jm,ko) )
     allocate( ttswr_qe_zm(jm,ko) )
     allocate( ttlwr_qe_zm(jm,ko) )
@@ -568,6 +580,12 @@ contains
     deallocate( cnvhr_gz_zm )
     deallocate( vdfhr_gz_zm )
     deallocate( qz_pdd )
+    deallocate( qz_vint )
+    deallocate( ttswr_qz_vint )
+    deallocate( ttlwr_qz_vint )
+    deallocate( lrghr_qz_vint )
+    deallocate( cnvhr_qz_vint )
+    deallocate( vdfhr_qz_vint )
     deallocate( qe_zm )
     deallocate( ttswr_qe_zm )
     deallocate( ttlwr_qe_zm )

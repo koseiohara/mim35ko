@@ -2,7 +2,7 @@ module diabatic_all
 
     use parameter, only : rkappa, cp
     use com_var  , only : im, jm, km, ko, pin, pout
-    use mim_var  , only : pd_p, pdd_pd, p_pdds
+    use mim_var  , only : p_pds, pd_p, pdd_pd, p_pdds
     use biseki, only : biseki_biseki
     use biseki_y, only : biseki_y_biseki_y
 
@@ -20,15 +20,17 @@ module diabatic_all
     !     3. diabatic heating to the zonal mean state
     !     4. Generation rate of eddy available potential energy
     !     5. Generation rate of zonal available potential energy
-    subroutine diabaticHeating(heating_3d, heating_zm, heating_gz_zm, eddy_generation, zonal_generation_gmean)
+    subroutine diabaticHeating(heating_3d, heating_zm, heating_gz_zm, eddy_generation, zonal_generation_vint, zonal_generation_gmean)
         real(4), intent(in)  :: heating_3d(im,jm,km)
         real(4), intent(out) :: heating_zm(jm,ko)
         real(4), intent(out) :: heating_gz_zm(jm,ko)
         real(4), intent(out) :: eddy_generation(jm,ko)
+        real(4), intent(out) :: zonal_generation_vint(jm)
         real(4), intent(out) :: zonal_generation_gmean(1)
 
         real(4) :: heating_exner_zm(jm,ko)
         real(4) :: heating_pdd(ko)
+        real(4) :: zonal_generation_zm(jm,ko)
         real(4) :: zonal_generation(ko)
 
         !call heating_ZonalMean(heating_3d(1:im,1:jm,1:km), &  !! IN
@@ -59,8 +61,16 @@ module diabatic_all
         !                        & heating_pdd(1:ko)       , &  !! IN
         !                        & zonal_generation(1:ko)    )  !! OUT
 
-        call heating_Zonal_highPrecision(heating_exner_zm(1:jm,1:ko), &  !! IN
-                                       & zonal_generation(1:ko)       )  !! OUT
+        call heating_Zonal_highPrecision(heating_exner_zm(1:jm,1:ko)   , &  !! IN
+                                       & zonal_generation_zm(1:jm,1:ko), &  !! OUT
+                                       & zonal_generation(1:ko)          )  !! OUT
+
+        call integral_p(jm                            , &  !! IN
+                      & ko                            , &  !! IN
+                      & pout(1:ko)                    , &  !! IN
+                      & p_pds(1:jm)                   , &  !! IN
+                      & zonal_generation_zm(1:jm,1:ko), &  !! IN
+                      & zonal_generation_vint(1:jm)     )  !! OUT
 
         call integral_p(1                      , &  !! IN   size in lat-direction
                       & ko                     , &  !! IN   size in p-direction
@@ -182,21 +192,22 @@ module diabatic_all
     end subroutine heating_Zonal_simple
 
 
-    subroutine heating_Zonal_highPrecision(heating_exner_zm, zonal_generation)
+    subroutine heating_Zonal_highPrecision(heating_exner_zm, zonal_generation_zm, zonal_generation)
         real(4), intent(in)  :: heating_exner_zm(jm,ko)
+        real(4), intent(out) :: zonal_generation_zm(jm,ko)
         real(4), intent(out) :: zonal_generation(ko)
 
-        real(4) :: work_zonal_generation(jm,ko)
+        !real(4) :: work_zonal_generation(jm,ko)
 
         integer :: k
 
         do k = 1, ko
-            work_zonal_generation(1:jm,k) = heating_exner_zm(1:jm,k) * &
-                                          & cp * ((pout(k)*0.001_4)**rkappa - (pdd_pd(1:jm,k)*0.001_4)**rkappa)
+            zonal_generation_zm(1:jm,k) = heating_exner_zm(1:jm,k) * &
+                                        & cp * ((pout(k)*0.001_4)**rkappa - (pdd_pd(1:jm,k)*0.001_4)**rkappa)
         enddo
 
-        call biseki_y_biseki_y(work_zonal_generation(1:jm,1:ko), &  !! IN
-                             & zonal_generation(1:ko)            )  !! OUT
+        call biseki_y_biseki_y(zonal_generation_zm(1:jm,1:ko), &  !! IN
+                             & zonal_generation(1:ko)          )  !! OUT
 
     end subroutine heating_Zonal_highPrecision
 

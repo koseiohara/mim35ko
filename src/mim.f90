@@ -858,6 +858,7 @@ program mim
                             & ttswr_zm(1:jm,1:ko)     , &  !! OUT
                             & ttswr_gz_zm(1:jm,1:ko)  , &  !! OUT
                             & ttswr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttswr_qz_vint(1:jm)     , &  !! OUT
                             & ttswr_qz_gmean(1)         )  !! OUT
      endif
 
@@ -866,6 +867,7 @@ program mim
                             & ttlwr_zm(1:jm,1:ko)     , &  !! OUT
                             & ttlwr_gz_zm(1:jm,1:ko)  , &  !! OUT
                             & ttlwr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & ttlwr_qz_vint(1:jm)     , &  !! OUT
                             & ttlwr_qz_gmean(1)         )  !! OUT
      endif
 
@@ -874,6 +876,7 @@ program mim
                             & lrghr_zm(1:jm,1:ko)     , &  !! OUT
                             & lrghr_gz_zm(1:jm,1:ko)  , &  !! OUT
                             & lrghr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & lrghr_qz_vint(1:jm)     , &  !! OUT
                             & lrghr_qz_gmean(1)         )  !! OUT
      endif
 
@@ -882,6 +885,7 @@ program mim
                             & cnvhr_zm(1:jm,1:ko)     , &  !! OUT
                             & cnvhr_gz_zm(1:jm,1:ko)  , &  !! OUT
                             & cnvhr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & cnvhr_qz_vint(1:jm)     , &  !! OUT
                             & cnvhr_qz_gmean(1)         )  !! OUT
      endif
 
@@ -890,6 +894,7 @@ program mim
                             & vdfhr_zm(1:jm,1:ko)     , &  !! OUT
                             & vdfhr_gz_zm(1:jm,1:ko)  , &  !! OUT
                             & vdfhr_qe_zm(1:jm,1:ko)  , &  !! OUT
+                            & vdfhr_qz_vint(1:jm)     , &  !! OUT
                             & vdfhr_qz_gmean(1)         )  !! OUT
      endif
 
@@ -913,6 +918,12 @@ program mim
                          & cnvhr_qe_zm(1:jm,1:ko) + &
                          & vdfhr_qe_zm(1:jm,1:ko)
 
+        qz_vint(1:jm) = ttswr_qz_vint(1:jm) + &
+                      & ttlwr_qz_vint(1:jm) + &
+                      & lrghr_qz_vint(1:jm) + &
+                      & cnvhr_qz_vint(1:jm) + &
+                      & vdfhr_qz_vint(1:jm)
+
         qz_gmean(1) = ttswr_qz_gmean(1) + &
                     & ttlwr_qz_gmean(1) + &
                     & lrghr_qz_gmean(1) + &
@@ -925,6 +936,7 @@ program mim
                             & q_zm(1:jm,1:ko)     , &  !! OUT
                             & qgz_zm(1:jm,1:ko)   , &  !! OUT
                             & qe_zm(1:jm,1:ko)    , &  !! OUT
+                            & qz_vint(1:jm)       , &  !! OUT
                             & qz_gmean(1)           )  !! OUT
      endif
 
@@ -1172,6 +1184,13 @@ program mim
 
         call integral_p( jm, ko, pout, p_pds, vdfhr_qe_zm, temp_vint )
         call grads_write( icount, 'vdfhr_qe_zm_vint', ginfo_vint, temp_vint )
+
+        call grads_write( icount, 'qz_vint', ginfo_vint, qz_vint )
+        call grads_write( icount, 'ttswr_qz_vint', ginfo_vint, ttswr_qz_vint )
+        call grads_write( icount, 'ttlwr_qz_vint', ginfo_vint, ttlwr_qz_vint )
+        call grads_write( icount, 'lrghr_qz_vint', ginfo_vint, lrghr_qz_vint )
+        call grads_write( icount, 'cnvhr_qz_vint', ginfo_vint, cnvhr_qz_vint )
+        call grads_write( icount, 'vdfhr_qz_vint', ginfo_vint, vdfhr_qz_vint )
 
         call integral_p( jm, ko, pout, p_pds, dkzdt_vkz, temp_vint )
         call grads_write( icount, 'dkzdt_vkz_vint', ginfo_vint, temp_vint )

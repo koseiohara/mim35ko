@@ -33,7 +33,7 @@ module az_latprof
       real(4) :: pd_ym(ko)
       real(4) :: integ(jm, ko)
       integer :: j, k
-      real(4) :: const
+      real(4), parameter :: const = cp * (1.0e+5)**(-rkappa) / (1+rkappa) / grav
       real(4) :: az_modify(jm)
 
       ! pd_ym : global mean p+ at the p++ levels
@@ -42,15 +42,15 @@ module az_latprof
       call integral_meridional( 1, jm, ko, alat, pd_pdd, &
            &                    pd_ym )
 
-      call energy_az_simple(pd_ym(1:ko)   , &  !! IN
-                          & integ(1:jm,1:ko))  !! OUT
+      !call energy_az_simple(pd_ym(1:ko)   , &  !! IN
+      !                    & integ(1:jm,1:ko))  !! OUT
      
       ! get integrand
       !call energy_az_decompose_tight(pd_ym(1:ko)   , &  !! IN
       !                             & integ(1:jm,1:ko))  !! OUT
 
-      !call energy_az_decompose_loose(pd_ym(1:ko)   , &  !! IN
-      !                             & integ(1:jm,1:ko))  !! OUT
+      call energy_az_decompose_loose(pd_ym(1:ko)   , &  !! IN
+                                   & integ(1:jm,1:ko))  !! OUT
 
       ! integrate with pt
       call integral_pt_ym( jm, ko, pout, p_pdds, pt_ym, pt_pdds, integ, &
